@@ -1,0 +1,160 @@
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\rpf2fivem.exe.config
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\rpf2fivem.exe
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\rpf2fivem.pdb
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\nunit.framework.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\nunit.framework.pdb
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\Pfim.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\SharpCompress.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\SharpDX.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\SharpDX.pdb
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\SharpDX.Mathematics.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\SharpDX.Mathematics.pdb
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\SixLabors.ImageSharp.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\System.Buffers.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\System.Memory.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\System.Numerics.Vectors.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\System.Text.Encoding.CodePages.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\Microsoft.WindowsAPICodePack.dll
+D:\Projects\C#\rpf2fivem-repository\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+D:\Projects\C#\rpf2fivem-repository\obj\Debug\rpf2fivem.csproj.AssemblyReference.cache
+D:\Projects\C#\rpf2fivem-repository\obj\Debug\rpf2fivem.exe.config
+D:\Projects\C#\rpf2fivem-repository\obj\Debug\rpf2fivem.Main.resources
+D:\Projects\C#\rpf2fivem-repository\obj\Debug\rpf2fivem.Properties.Resources.resources
+D:\Projects\C#\rpf2fivem-repository\obj\Debug\rpf2fivem.csproj.GenerateResource.cache
+D:\Projects\C#\rpf2fivem-repository\obj\Debug\rpf2fivem.csproj.CoreCompileInputs.cache
+D:\Projects\C#\rpf2fivem-repository\obj\Debug\rpf2fivem.csproj.CopyComplete
+D:\Projects\C#\rpf2fivem-repository\obj\Debug\rpf2fivem.exe
+D:\Projects\C#\rpf2fivem-repository\obj\Debug\rpf2fivem.pdb
+D:\C# Development\rpf2fivem-repository\bin\Debug\rpf2fivem.exe.config
+D:\C# Development\rpf2fivem-repository\bin\Debug\rpf2fivem.exe
+D:\C# Development\rpf2fivem-repository\bin\Debug\rpf2fivem.pdb
+D:\C# Development\rpf2fivem-repository\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\nunit.framework.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\nunit.framework.pdb
+D:\C# Development\rpf2fivem-repository\bin\Debug\Pfim.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\Sentry.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\SharpCompress.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\SharpDX.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\SharpDX.pdb
+D:\C# Development\rpf2fivem-repository\bin\Debug\SharpDX.Mathematics.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\SharpDX.Mathematics.pdb
+D:\C# Development\rpf2fivem-repository\bin\Debug\SixLabors.ImageSharp.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Buffers.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Collections.Immutable.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Memory.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Numerics.Vectors.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Reflection.Metadata.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Text.Encoding.CodePages.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Text.Encodings.Web.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Text.Json.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Threading.Tasks.Extensions.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.ValueTuple.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\Microsoft.WindowsAPICodePack.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+D:\C# Development\rpf2fivem-repository\obj\Debug\rpf2fivem.csproj.AssemblyReference.cache
+D:\C# Development\rpf2fivem-repository\obj\Debug\rpf2fivem.exe.config
+D:\C# Development\rpf2fivem-repository\obj\Debug\rpf2fivem.Main.resources
+D:\C# Development\rpf2fivem-repository\obj\Debug\rpf2fivem.Properties.Resources.resources
+D:\C# Development\rpf2fivem-repository\obj\Debug\rpf2fivem.csproj.GenerateResource.cache
+D:\C# Development\rpf2fivem-repository\obj\Debug\Sentry.Attributes.cs
+D:\C# Development\rpf2fivem-repository\obj\Debug\rpf2fivem.csproj.CoreCompileInputs.cache
+D:\C# Development\rpf2fivem-repository\obj\Debug\rpf2fivem.csproj.CopyComplete
+D:\C# Development\rpf2fivem-repository\obj\Debug\rpf2fivem.exe
+D:\C# Development\rpf2fivem-repository\obj\Debug\rpf2fivem.pdb
+D:\C# Development\rpf2fivem-repository\bin\Debug\Microsoft.Win32.Primitives.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\netstandard.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.AppContext.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Collections.Concurrent.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Collections.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Collections.NonGeneric.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Collections.Specialized.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.ComponentModel.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.ComponentModel.EventBasedAsync.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.ComponentModel.Primitives.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.ComponentModel.TypeConverter.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Console.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Data.Common.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Diagnostics.Contracts.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Diagnostics.Debug.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Diagnostics.FileVersionInfo.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Diagnostics.Process.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Diagnostics.StackTrace.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Diagnostics.TextWriterTraceListener.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Diagnostics.Tools.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Diagnostics.TraceSource.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Diagnostics.Tracing.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Drawing.Primitives.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Dynamic.Runtime.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Globalization.Calendars.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Globalization.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Globalization.Extensions.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.Compression.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.Compression.ZipFile.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.FileSystem.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.FileSystem.DriveInfo.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.FileSystem.Primitives.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.FileSystem.Watcher.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.IsolatedStorage.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.MemoryMappedFiles.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.Pipes.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.IO.UnmanagedMemoryStream.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Linq.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Linq.Expressions.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Linq.Parallel.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Linq.Queryable.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.Http.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.NameResolution.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.NetworkInformation.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.Ping.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.Primitives.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.Requests.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.Security.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.Sockets.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.WebHeaderCollection.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.WebSockets.Client.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Net.WebSockets.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.ObjectModel.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Reflection.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Reflection.Extensions.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Reflection.Primitives.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Resources.Reader.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Resources.ResourceManager.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Resources.Writer.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.CompilerServices.VisualC.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.Extensions.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.Handles.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.InteropServices.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.InteropServices.RuntimeInformation.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.Numerics.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.Serialization.Formatters.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.Serialization.Json.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.Serialization.Primitives.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Runtime.Serialization.Xml.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Security.Claims.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Security.Cryptography.Algorithms.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Security.Cryptography.Csp.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Security.Cryptography.Encoding.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Security.Cryptography.Primitives.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Security.Cryptography.X509Certificates.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Security.Principal.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Security.SecureString.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Text.Encoding.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Text.Encoding.Extensions.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Text.RegularExpressions.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Threading.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Threading.Overlapped.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Threading.Tasks.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Threading.Tasks.Parallel.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Threading.Thread.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Threading.ThreadPool.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Threading.Timer.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Xml.ReaderWriter.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Xml.XDocument.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Xml.XmlDocument.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Xml.XmlSerializer.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Xml.XPath.dll
+D:\C# Development\rpf2fivem-repository\bin\Debug\System.Xml.XPath.XDocument.dll

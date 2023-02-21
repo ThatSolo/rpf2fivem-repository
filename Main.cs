@@ -8,16 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
-using SharpCompress.Archives.Rar;
 using SharpCompress.Common;
 using SharpCompress.Archives;
+using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.Zip;
-using System.Diagnostics;
 using SharpCompress.Archives.SevenZip;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using CodeWalker.GameFiles;
 using CodeWalker.Utils;
+using Sentry;
 
 namespace rpf2fivem
 {
@@ -25,13 +26,13 @@ namespace rpf2fivem
     public partial class Main : Form
     {
 
+    // GLOBALS
 
-        // GLOBALS
-
-        int currentQueue = 1;
+    int currentQueue = 1;
         Random rnd = new Random();
         bool vmenuhelper = true;
         bool servercfghelper = true;
+        bool combiner = false;
         int convertFromFolder_resname;
         static string latestModelName = "";
 
@@ -42,6 +43,12 @@ namespace rpf2fivem
         };
 
         static Dictionary<string, string> modelNames = new Dictionary<string, string>();
+
+        struct StructureFolders
+        {
+            public string streamFolder;
+            public string dataFolder;
+        }
 
         public Main()
         {
@@ -66,6 +73,7 @@ namespace rpf2fivem
             LogAppend("Developed by Avenzey#6184 (thanks to https://github.com/vscorpio for developing the original version!)");
             LogAppend("GitHub repository: https://github.com/Avenze/rpf2fivem-repository");
             LogAppend("Discord support: https://discord.gg/C4e4q6g");
+            LogAppend("Patreon: https://patreon.com/avenzey");
             LogAppend("---------------");
 
             LogAppend("GTA5-Mods links must look like this: ");
@@ -81,6 +89,8 @@ namespace rpf2fivem
                 CompressCheck.Checked = false;
                 CompressCheck.Enabled = false;
             }
+
+            SentrySdk.CaptureMessage("Hello Sentry");
         }
 
         // Helper Functions
@@ -118,6 +128,7 @@ namespace rpf2fivem
             }
             catch (Exception ex)
             {
+                SentrySdk.CaptureException(ex);
                 ErrorAppend("[Worker] Failed to write log to file. Stacktrace: " + ex);
             }
         }
@@ -237,6 +248,7 @@ namespace rpf2fivem
 
             foreach (var item in rarFiles)
             {
+                LogAppend("[SharpCompress] Found .RAR archive, decompressing...");
                 unRar(Path.Combine("cache", Path.GetFileName(item)));
             }
 
@@ -245,6 +257,7 @@ namespace rpf2fivem
 
             foreach (var item in zipFiles)
             {
+                LogAppend("[SharpCompress] Found .ZIP archive, decompressing...");
                 unZip(Path.Combine("cache", Path.GetFileName(item)));
             }
 
@@ -253,6 +266,7 @@ namespace rpf2fivem
 
             foreach (var item in sevenFiles)
             {
+                LogAppend("[SharpCompress] Found .7Z archive, decompressing...");
                 unSeven(Path.Combine("cache", Path.GetFileName(item)));
             }
 
@@ -260,24 +274,37 @@ namespace rpf2fivem
         }
 
         // Unpacking Functions
-        private void RpfUnpack(string resname)
+        private void RpfUnpack(string resname, string rpfFile)
         {
-            string rpfExtension = "*.rpf";
-            string[] rpfFiles = Directory.GetFiles("cache", rpfExtension, SearchOption.AllDirectories);
-            foreach (var item in rpfFiles)
+            if (rpfFile == "")
             {
-                RpfFile rpf = new RpfFile(item, item);
-                LogAppend("[CodeWalker] Unpacking " + item + "...");
+                string rpfExtension = "*.rpf";
+                string[] rpfFiles = Directory.GetFiles("cache", rpfExtension, SearchOption.AllDirectories);
+                foreach (var item in rpfFiles)
+                {
+                    RpfFile rpf = new RpfFile(item, item);
+                    LogAppend("[CodeWalker] Unpacking " + item + "...");
+
+                    if (rpf.ScanStructure(null, null))
+                    {
+                        ExtractFilesInRPF(rpf, @".\cache\rpfunpack\");
+                    }
+                }
+
+                if (rpfFiles.Length == 0)
+                {
+                    WarningAppend("[CodeWalker] Vehicle (" + resname + ") is incompatible, no .rpf file was found.");
+                }
+            }
+            else
+            {
+                RpfFile rpf = new RpfFile(rpfFile, rpfFile);
+                LogAppend("[CodeWalker] Unpacking " + rpfFile + "...");
 
                 if (rpf.ScanStructure(null, null))
                 {
                     ExtractFilesInRPF(rpf, @".\cache\rpfunpack\");
                 }
-            }
-
-            if (rpfFiles.Length == 0)
-            {
-                WarningAppend("[CodeWalker] Vehicle (" + resname + ") is incompatible, no .rpf file was found.");
             }
         }
 
@@ -360,6 +387,8 @@ namespace rpf2fivem
                                                             byte[] dds = DDSIO.GetDDSFile(texture.Value);
                                                             File.WriteAllBytes("./NConvert/" + texture.Value.Name + ".dds", dds);
 
+                                                            //HideShellCmd(@"./library/nconvert/nconvert.exe -out dds -resize 50% 50% -overwrite ./cache/images/" + texture.Value.Name + ".dds");
+
                                                             Process p = new Process();
                                                             p.StartInfo.FileName = @"./NConvert/nconvert.exe";
                                                             p.StartInfo.Arguments = $"-out dds -resize 50% 50% -overwrite ./NConvert/{texture.Value.Name}.dds";
@@ -367,7 +396,9 @@ namespace rpf2fivem
                                                             p.StartInfo.RedirectStandardOutput = true;
                                                             p.Start();
 
-                                                            p.WaitForExit();
+                                                            //p.WaitForExit();
+
+                                                            LogAppend("[NConvert] " + p.StandardOutput.ReadToEnd());
 
                                                             LogAppend("[NConvert] Sucessfully resized texture (" + texture.Value.Name + ") to 50%!");
                                                             File.Move("./NConvert/" + texture.Value.Name + ".dds", directoryOffset + texture.Value.Name + ".dds");
@@ -452,42 +483,41 @@ namespace rpf2fivem
             File.WriteAllText(filePath, content, Encoding.Default);
         }
 
-        private void inflateFromCache(string resname, string type, bool isYtd, bool isYtf)
+        private void InflateResourceFolder(string streamFolder, string dataFolder, string type, bool isYtd, bool isYtf, bool combined)
         {
             //Assume user types .txt into textbox
             string fileExtension = "*." + type;
-
             string[] txtFiles = Directory.GetFiles("cache", fileExtension, SearchOption.AllDirectories);
 
             foreach (var item in txtFiles)
             {
-                LogAppend("[Worker] Inflating " + resname + @"\" + item);
+                LogAppend("[Worker] Inflating " + item);
                 if (isYtd)
                 {
                     fixTextureFile(item);
-                    File.Move(item, Path.Combine(resname + "\\stream", Path.GetFileName(item))); // put into stream folder inside resource name
+                    File.Move(item, Path.Combine(streamFolder, Path.GetFileName(item))); // put into stream folder inside resource name
                     VmenuHelper(Path.GetFileName(item));
 
                 }
                 else if (isYtf)
                 {
                     fixTextureFile(item);
-                    File.Move(item, Path.Combine(resname + "\\stream", Path.GetFileName(item))); // put into stream folder inside resource name
+                    File.Move(item, Path.Combine(streamFolder, Path.GetFileName(item))); // put into stream folder inside resource name
                 }
                 else
                 {
-                    File.Move(item, Path.Combine(resname + "\\data", Path.GetFileName(item)));
+                    File.Move(item, Path.Combine(dataFolder, Path.GetFileName(item)));
                 }
             }
         }
 
-        private void delReplacementLeftover(string resname, string type)
+        private void RemoveUnnessecary(string type)
         {
             string fileExtension = "*." + type;
             string[] txtFiles = Directory.GetFiles("cache", fileExtension, SearchOption.AllDirectories);
             foreach (var item in txtFiles)
             {
-                LogAppend("[Worker] Deleting " + resname + @"\" + item + " ...");
+                LogAppend("[Worker] Deleting / " + item + " ...");
                 File.Delete(item);
             }
         }
@@ -498,9 +528,9 @@ namespace rpf2fivem
             {
                 Directory.Delete("cache", true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                SentrySdk.CaptureException(ex);
             }
             fivemresname_tb.Text = rnd.Next(2147483647).ToString();
             StatusHandler("Idle");
@@ -510,92 +540,124 @@ namespace rpf2fivem
         string fxmanifest_single = Properties.Resources.fxmanifest_false;
         string fxmanifest_combined = Properties.Resources.fxmanifest_true;
 
-        public async Task setUpSingleEnviroment(string filteredresname)
+        private void SetupBasicEnviroment()
         {
-            LogAppend("[Worker] Setting up environment...");
+            LogAppend("[Worker] Setting up basic enviroment...");
             if (!Directory.Exists("./cache"))
             {
                 Directory.CreateDirectory("cache");
                 Directory.CreateDirectory(@"cache\unpack");
-            }
-
-            if (!Directory.Exists("./cache/rpfunpack"))
-            {
                 Directory.CreateDirectory(@"cache\rpfunpack");
+                Directory.CreateDirectory(@"cache\structure");
+                Directory.CreateDirectory(@"cache\data");
             }
+            LogAppend("[Worker] Created /cache directory.");
 
             if (!Directory.Exists("./resources"))
             {
                 Directory.CreateDirectory("resources");
             }
-
-            LogAppend("[Worker] Created " + filteredresname + " FiveM resource directory...");
-            HideShellCmd("mkdir " + filteredresname + @"\stream");
-
-            Directory.CreateDirectory(filteredresname);
-            Directory.CreateDirectory(@"./" + filteredresname + "/stream/");
-            Directory.CreateDirectory(@"./" + filteredresname + "/data/");
-
-            Encoding utf8WithoutBom = new UTF8Encoding(false);
-            File.WriteAllText(filteredresname + @"\fxmanifest.lua", fxmanifest_single, utf8WithoutBom);
-
-            await Task.Delay(500);
+            LogAppend("[Worker] Created /resources directory.");
         }
 
-        public async Task setUpCombinedEnviroment(string filteredresname)
+        private void SetupStructureFolders(string folderName, string combinedFolderName, bool combinedEnv)
         {
 
+            Encoding utf8WithoutBom = new UTF8Encoding(false);
+            string directory = "";
+            string fxmanifest = "";
+
+            if (combinedEnv == true)
+            {
+                directory = @"./cache/structure/" + combinedFolderName;
+                fxmanifest = fxmanifest_combined;
+            }
+            else
+            {
+                directory = @"./cache/structure/" + folderName;
+                fxmanifest = fxmanifest_single;
+            }
+
+            Directory.CreateDirectory(directory);
+            Directory.CreateDirectory(directory + "/stream/");
+            Directory.CreateDirectory(directory + "/data/");
+            File.WriteAllText(directory + @"\fxmanifest.lua", fxmanifest, utf8WithoutBom);
+
+            LogAppend("[Worker] Created resource folder structure.");
+        }
+
+        private StructureFolders CreateDataFolders(string folderName, string combinedFolderName, bool combinedEnv)
+        {
+            StructureFolders structure;
+
+            if (combinedEnv == true)
+            {
+                string directory = @"./cache/structure/" + combinedFolderName;
+
+                Directory.CreateDirectory(directory + "/stream/" + folderName); // refer to the folder structure :/
+                Directory.CreateDirectory(directory + "/data/" + folderName);
+
+                structure.streamFolder = directory + @"/stream/" + folderName;
+                structure.dataFolder = directory + @"/data/" + folderName;
+            }
+            else
+            {
+                string directory = @"./cache/structure/" + folderName;
+
+                structure.streamFolder = directory + "/stream/";
+                structure.dataFolder = directory + "/data/";
+            }
+
+            return structure;
         }
 
         // Conversion Functions
-        public async Task startConvertFromLink(string link, string resname)
+        public async Task startConversion(bool folder, string resource, string saferesource)
         {
             Encoding utf8WithoutBom = new UTF8Encoding(false);
+            Random random = new Random();
+            Regex regex = new Regex(@"<(.*?)>");
 
-            Regex rx = new Regex(@"<(.*?)>");
-            string filteredresname = rx.Match(link).Groups[1].Value;
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            LogAppend("[Worker] Started resConvert async task...");
-            LogAppend("[Worker] Cleaning cache...");
-            cleanUp();
+            LogAppend("[Worker] Setting up basic enviroment...");
+            SetupBasicEnviroment();
 
-            if (VmenuCheck.Checked == true)
+            //LogAppend("[Worker] Setting up resource folder structure...");
+            //SetupStructureFolders(singleEnviromentFolder, combinedEnviromentFolder, combined);
+
+            LogAppend("[Worker] Start conversion process...");
+            if (folder == false)
             {
-                LogAppend("[Worker] Setting up environment...");
-                if (!Directory.Exists("./cache"))
+                tsBar.Maximum = queueList.Items.Count;
+                tsBar.Value = 0;
+
+                foreach (string CurrentItem in queueList.Items)
                 {
-                    Directory.CreateDirectory("cache");
-                    Directory.CreateDirectory(@"cache\unpack");
-                }
+                    QueueHandler(currentQueue, queueList.Items.Count);
+                    tsBar.Value++;
 
-                if (!Directory.Exists("./cache/rpfunpack"))
-                {
-                    Directory.CreateDirectory(@"cache\rpfunpack");
-                }
+                    string filteredresname = "";
+                    string SingleEnviromentFolder = regex.Match(CurrentItem).Groups[1].Value;
+                    string CombinedEnviromentFolder = rnd.Next(2147483647).ToString();
 
-                if (!Directory.Exists("./resources"))
-                {
-                    Directory.CreateDirectory("resources");
-                }
+                    string StreamFolder = "";
+                    string DataFolder = "";
+                    var StopwatchTimer = Stopwatch.StartNew();
 
-                LogAppend("[Worker] Writing config helpers...");
-                CfgHelper(filteredresname);
+                    LogAppend("[Worker] Setting up resource folder structure...");
+                    SetupStructureFolders(SingleEnviromentFolder, CombinedEnviromentFolder, combiner);
 
-                LogAppend("[Worker] Created " + filteredresname + " FiveM resource directory...");
-                HideShellCmd("mkdir " + filteredresname + @"\stream");
-                HideShellCmd("mkdir " + filteredresname + @"\data");
-                await Task.Delay(500);
+                    LogAppend("[Worker] Fetching resource stream and data folders...");
+                    var StructureFolders = CreateDataFolders(SingleEnviromentFolder, CombinedEnviromentFolder, combiner);
+                    StreamFolder = StructureFolders.streamFolder;
+                    DataFolder = StructureFolders.dataFolder;
 
-                LogAppend("[Worker] Writing resouce manifest...");
-                File.WriteAllText(filteredresname + @"\fxmanifest.lua", reslua.Text, utf8WithoutBom);
+                    LogAppend("[Worker] Downloading archive...");
+                    if (CurrentItem != "")
+                    {
+                        await AsyncFileDownload(CurrentItem.Replace($"<{SingleEnviromentFolder}>", ""));
+                    }
 
-                try
-                {
-                    LogAppend("[Worker] Checking link...OK");
-                    LogAppend("[AsyncDownload] Downloading archive...");
-                    await AsyncFileDownload(link.Replace($"<{resname}>", ""));
-
-                    LogAppend("[AsyncDownload] Successfully fetched archive!");
+                    LogAppend("[Worker] Moving archives to cache...");
                     HideShellCmd(@"move *.rar cache");
                     HideShellCmd(@"move *.zip cache");
                     HideShellCmd(@"move *.7z cache");
@@ -605,118 +667,110 @@ namespace rpf2fivem
                     universalCacheUnpack();
                     await Task.Delay(2500);
 
-                    LogAppend("[SharpCompress] Unpack finished!");
-                    delReplacementLeftover(filteredresname, "yft");
-                    delReplacementLeftover(filteredresname, "ytd");
-                    delReplacementLeftover(filteredresname, "meta");
+                    LogAppend("[Worker] Removing leftover files from the archive...");
+                    RemoveUnnessecary("yft");
+                    RemoveUnnessecary("ytd");
+                    RemoveUnnessecary("meta");
 
-                    LogAppend("[Worker] Searching for dlc.rpf...");
-                    RpfUnpack(filteredresname);
+                    LogAppend("[CodeWalker] Searching for dlc.rpf...");
+                    try
+                    {
+                        RpfUnpack(filteredresname, "");
+                    }
+                    catch (Exception ex)
+                    {
+                        SentrySdk.CaptureException(ex);
+                        ErrorAppend("[CodeWalker] Failed to extract dlc.rpf, stack trace: " + ex);
+                    }
 
-                    LogAppend("[Worker] Removing unnessecary items from cache...");
+                    LogAppend("[Worker] Moving items from cache to resource folder."); // Clean cache from unused files, such as fragments and texture dictionaries.
                     await Task.Delay(5000);
-                    inflateFromCache(filteredresname, "meta", false, false);
-                    inflateFromCache(filteredresname, "yft", false, true);
-                    inflateFromCache(filteredresname, "ytd", true, false);
+                    InflateResourceFolder(StreamFolder, DataFolder, "meta", false, false, false);
+                    InflateResourceFolder(StreamFolder, DataFolder, "yft", false, true, false);
+                    InflateResourceFolder(StreamFolder, DataFolder, "ytd", true, false, false);
 
-                    LogAppend("[Worker] Moving resource into resources folder...");
-                    HideShellCmd(@"move " + filteredresname + "resources");
-                    HideShellCmd(@"move " + filteredresname + "resources");
+                    LogAppend("[Worker] Moving resource folder to /resources...");
+                    string VehicleResourceName = "";
+                    if (combiner == true)
+                    {
+                        Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
+                        VehicleResourceName = CombinedEnviromentFolder;
+                    }
+                    else
+                    {
+                        Directory.Move(@"./cache/structure/" + SingleEnviromentFolder, @"./resources/" + SingleEnviromentFolder);
+                        VehicleResourceName = SingleEnviromentFolder;
+                    }
 
-                    LogAppend("[Worker] Cleaning up...");
-                    currentQueue += 1;
+                    CfgHelper(VehicleResourceName);
+
+                    LogAppend("[Worker] Conversion of vehicle " + VehicleResourceName + " has finished, cleaning up...");
                     currentQueue += 1;
                     cleanUp();
-                    watch.Stop();
-                    var elapsedMs = watch.ElapsedMilliseconds;
-                    jobTime.Text = "| Last job took: " + elapsedMs + " ms";
-
-                    LogAppend("[Worker] Finished converting vehicle " + filteredresname);
+                    StopwatchTimer.Stop();
+                    jobTime.Text = "| Last job took: " + StopwatchTimer.ElapsedMilliseconds + " ms";
                 }
-                catch (Exception ex)
-                {
-                    ErrorAppend(ex.ToString());
-                }
-
-
             }
-        }
-
-        public async Task startConvertFromFolder(string filteredresname)
-        {
-            filteredresname = rnd.Next(555555).ToString();
-            Encoding utf8WithoutBom = new UTF8Encoding(false);
-
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            LogAppend("[Worker] Started resConvert async task...");
-            if (VmenuCheck.Checked == true)
+            else
             {
-                LogAppend("[Worker] Setting up environment...");
-                if (!Directory.Exists("./cache"))
-                {
-                    Directory.CreateDirectory("cache");
-                    Directory.CreateDirectory(@"cache\unpack");
-                }
+                QueueHandler(currentQueue, queueList.Items.Count);
+                tsBar.Value++;
 
-                if (!Directory.Exists("./cache/rpfunpack"))
-                {
-                    Directory.CreateDirectory(@"cache\rpfunpack");
-                }
+                string filteredresname = "";
+                string SingleEnviromentFolder = rnd.Next(2147483647).ToString();
 
-                if (!Directory.Exists("./resources"))
-                {
-                    Directory.CreateDirectory("resources");
-                }
+                string StreamFolder = "";
+                string DataFolder = "";
+                var StopwatchTimer = Stopwatch.StartNew();
 
-                LogAppend("[Worker] Writing config helpers...");
-                CfgHelper(filteredresname);
+                LogAppend("[Worker] Moving selected archive to cache...");
+                File.Move(resource, @"./cache/" + saferesource);
 
-                LogAppend("[Worker] Created " + filteredresname + " FiveM resource directory...");
-                HideShellCmd("mkdir " + filteredresname + @"\stream");
+                LogAppend("[Worker] Setting up resource folder structure...");
+                SetupStructureFolders(SingleEnviromentFolder, "", false);
+
+                LogAppend("[Worker] Fetching resource stream and data folders...");
+                var StructureFolders = CreateDataFolders(SingleEnviromentFolder, "", false);
+                StreamFolder = StructureFolders.streamFolder;
+                DataFolder = StructureFolders.dataFolder;
+
+                LogAppend("[SharpCompress] Decompressing...");
                 await Task.Delay(500);
+                universalCacheUnpack();
+                await Task.Delay(2500);
 
-                LogAppend("[Worker] Writing resouce manifest...");
-                File.WriteAllText(filteredresname + @"\fxmanifest.lua", reslua.Text, utf8WithoutBom);
+                LogAppend("[Worker] Removing leftover files from the archive...");
+                RemoveUnnessecary("yft");
+                RemoveUnnessecary("ytd");
+                RemoveUnnessecary("meta");
+
+                LogAppend("[CodeWalker] Searching for dlc.rpf...");
                 try
                 {
-                    LogAppend("[SharpCompress] Decompressing...");
-                    await Task.Delay(500);
-                    universalCacheUnpack();
-                    await Task.Delay(2500);
-
-                    LogAppend("[SharpCompress] Unpack finished!");
-                    delReplacementLeftover(filteredresname, "yft");
-                    delReplacementLeftover(filteredresname, "ytd");
-                    delReplacementLeftover(filteredresname, "meta");
-
-                    LogAppend("[Worker] Searching for dlc.rpf...");
-                    RpfUnpack(filteredresname);
-
-                    LogAppend("[CodeWalker] Unpacking RPF...");
-                    await Task.Delay(5000);
-                    inflateFromCache(filteredresname, "meta", false, false);
-                    inflateFromCache(filteredresname, "yft", false, true);
-                    inflateFromCache(filteredresname, "ytd", true, false);
-
-                    LogAppend("[Worker] Moving resource into resources folder...");
-                    HideShellCmd(@"move " + filteredresname + "resources");
-
-                    LogAppend("[Worker] Cleaning up...");
-                    currentQueue += 1;
-                    cleanUp();
-                    watch.Stop();
-                    var elapsedMs = watch.ElapsedMilliseconds;
-                    jobTime.Text = "| Last job took: " + elapsedMs + " ms";
-
-                    LogAppend("[Worker] Finished converting vehicle " + filteredresname);
-                    return;
+                    RpfUnpack(filteredresname, "");
                 }
                 catch (Exception ex)
                 {
-                    ErrorAppend(ex.ToString());
+                    SentrySdk.CaptureException(ex);
+                    ErrorAppend("[CodeWalker] Failed to extract dlc.rpf, stack trace: " + ex);
                 }
 
+                LogAppend("[Worker] Moving items from cache to resource folder."); // Clean cache from unused files, such as fragments and texture dictionaries.
+                await Task.Delay(5000);
+                InflateResourceFolder(StreamFolder, DataFolder, "meta", false, false, false);
+                InflateResourceFolder(StreamFolder, DataFolder, "yft", false, true, false);
+                InflateResourceFolder(StreamFolder, DataFolder, "ytd", true, false, false);
 
+                LogAppend("[Worker] Moving converted resource into /resources folder.");
+                Directory.Move(@"./cache/structure/" + SingleEnviromentFolder, @"./resources/" + SingleEnviromentFolder);
+
+                CfgHelper(SingleEnviromentFolder);
+
+                LogAppend("[Worker] Conversion of vehicle " + SingleEnviromentFolder + " has finished, cleaning up...");
+                currentQueue += 1;
+                cleanUp();
+                StopwatchTimer.Stop();
+                jobTime.Text = "| Last job took: " + StopwatchTimer.ElapsedMilliseconds + " ms";
             }
         }
 
@@ -759,38 +813,22 @@ namespace rpf2fivem
         {
             Random rnd = new Random();
             convertFromFolder_resname = rnd.Next(555555);
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = "C:\\Users";
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                string filepath = dialog.FileName;
-                DirectoryInfo d = new DirectoryInfo(filepath);
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "7z|*.7z|ZIP|*.zip|RAR|*.rar";
+                openFileDialog.RestoreDirectory = true;
 
-                foreach (var file in d.GetFiles("*.zip"))
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    Directory.CreateDirectory("cache");
-                    LogAppend($"Found archive: {file.FullName}");
-                    Directory.Move(file.FullName, @"cache\" + file.Name);
-                    await startConvertFromFolder(convertFromFolder_resname.ToString());
-                }
-                foreach (var file in d.GetFiles("*.rar"))
-                {
-                    Directory.CreateDirectory("cache");
-                    LogAppend($"Found archive: {file.FullName}");
-                    Directory.Move(file.FullName, @"cache\" + file.Name);
-                    await startConvertFromFolder(convertFromFolder_resname.ToString());
-                }
-                foreach (var file in d.GetFiles("*.7z"))
-                {
-                    Directory.CreateDirectory("cache");
-                    LogAppend($"Found archive: {file.FullName}");
-                    Directory.Move(file.FullName, @"cache\" + file.Name);
-                    await startConvertFromFolder(convertFromFolder_resname.ToString());
-                }
+                    var filePath = openFileDialog.FileName;
+                    var safeFileName = openFileDialog.SafeFileName;
+                    LogAppend("[Worker] Converting resource at " + filePath);
+                    startConversion(true, filePath, safeFileName);
 
+                }
             }
-            await Task.Delay(1000);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -809,20 +847,7 @@ namespace rpf2fivem
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            tsBar.Maximum = queueList.Items.Count;
-            tsBar.Value = 0;
-            foreach (string currentItem in queueList.Items)
-            {
-                QueueHandler(currentQueue, queueList.Items.Count);
-                tsBar.Value++;
-                string abc = currentItem;
-                Regex rx = new Regex(@"<(.*?)>");
-                await startConvertFromLink(currentItem, rx.Match(currentItem).Groups[1].Value);
-
-            }
-
-
-            //startConvert(gta5mods_tb.Text);
+            startConversion(false, "", "");
         }
 
         private void btnAddQueue_Click(object sender, EventArgs e)
@@ -858,6 +883,20 @@ namespace rpf2fivem
         private void reslua_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void checkBox1_CheckedChanged_2(object sender, EventArgs e)
+        {
+            if (CombineCheck.Checked == true)
+            {
+                combiner = true;
+                LogAppend("[InputHandler] Combine Helpers switched on");
+            }
+            else
+            {
+                combiner = false;
+                LogAppend("[InputHandler] Combine Helpers switched off");
+            }
         }
     }
 }

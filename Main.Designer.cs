@@ -43,7 +43,7 @@
             this.log = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.CombineCheck = new System.Windows.Forms.CheckBox();
             this.CompressCheck = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
@@ -185,15 +185,15 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Enabled = false;
-            this.label7.Location = new System.Drawing.Point(196, -3);
+            this.label7.Location = new System.Drawing.Point(130, -3);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(398, 16);
+            this.label7.Size = new System.Drawing.Size(467, 16);
             this.label7.TabIndex = 13;
-            this.label7.Text = "buildname fxmanifest_support | developed by: github.com/Avenze";
+            this.label7.Text = "build rpf2fivem@combined-support_3.0.0  | developed by: github.com/Avenze";
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.checkBox1);
+            this.groupBox3.Controls.Add(this.CombineCheck);
             this.groupBox3.Controls.Add(this.CompressCheck);
             this.groupBox3.Controls.Add(this.checkBox2);
             this.groupBox3.Controls.Add(this.textBox6);
@@ -208,18 +208,16 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Resource";
             // 
-            // checkBox1
+            // CombineCheck
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Enabled = false;
-            this.checkBox1.Location = new System.Drawing.Point(9, 148);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(268, 20);
-            this.checkBox1.TabIndex = 19;
-            this.checkBox1.Text = "store converted vehicles in one resource";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.CombineCheck.AutoSize = true;
+            this.CombineCheck.Location = new System.Drawing.Point(9, 148);
+            this.CombineCheck.Name = "CombineCheck";
+            this.CombineCheck.Size = new System.Drawing.Size(268, 20);
+            this.CombineCheck.TabIndex = 19;
+            this.CombineCheck.Text = "store converted vehicles in one resource";
+            this.CombineCheck.UseVisualStyleBackColor = true;
+            this.CombineCheck.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged_2);
             // 
             // CompressCheck
             // 
@@ -439,6 +437,6 @@
         private System.Windows.Forms.Button btnConvertFromFolder;
         private System.Windows.Forms.CheckBox CompressCheck;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox CombineCheck;
     }
 }
