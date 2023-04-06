@@ -199,6 +199,7 @@ namespace rpf2fivem
             {
                 foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                 {
+                    LogAppend("[SharpCompress] Found .zzzzzzzz archive, decompressing..." + target);
                     entry.WriteToDirectory("cache\\unpack", new ExtractionOptions()
                     {
                         ExtractFullPath = true,
@@ -214,6 +215,7 @@ namespace rpf2fivem
             {
                 foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                 {
+                    LogAppend("[SharpCompress] Found .rrrrrrrrrr archive, decompressing..." + target);
                     entry.WriteToDirectory("cache\\unpack", new ExtractionOptions()
                     {
                         ExtractFullPath = true,
@@ -230,6 +232,7 @@ namespace rpf2fivem
             {
                 foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                 {
+                    LogAppend("[SharpCompress] Found .ssssssssss archive, decompressing..." + target);
                     entry.WriteToDirectory("cache\\unpack", new ExtractionOptions()
                     {
                         ExtractFullPath = true,
@@ -393,6 +396,7 @@ namespace rpf2fivem
                                                             p.StartInfo.FileName = @"./NConvert/nconvert.exe";
                                                             p.StartInfo.Arguments = $"-out dds -resize 50% 50% -overwrite ./NConvert/{texture.Value.Name}.dds";
                                                             p.StartInfo.UseShellExecute = false;
+                                                            p.StartInfo.CreateNoWindow = true;
                                                             p.StartInfo.RedirectStandardOutput = true;
                                                             p.Start();
 
