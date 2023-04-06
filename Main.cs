@@ -199,7 +199,6 @@ namespace rpf2fivem
             {
                 foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                 {
-                    LogAppend("[SharpCompress] Found .zzzzzzzz archive, decompressing..." + target);
                     entry.WriteToDirectory("cache\\unpack", new ExtractionOptions()
                     {
                         ExtractFullPath = true,
@@ -215,7 +214,6 @@ namespace rpf2fivem
             {
                 foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                 {
-                    LogAppend("[SharpCompress] Found .rrrrrrrrrr archive, decompressing..." + target);
                     entry.WriteToDirectory("cache\\unpack", new ExtractionOptions()
                     {
                         ExtractFullPath = true,
@@ -232,7 +230,6 @@ namespace rpf2fivem
             {
                 foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                 {
-                    LogAppend("[SharpCompress] Found .ssssssssss archive, decompressing..." + target);
                     entry.WriteToDirectory("cache\\unpack", new ExtractionOptions()
                     {
                         ExtractFullPath = true,
@@ -622,20 +619,20 @@ namespace rpf2fivem
             Random random = new Random();
             Regex regex = new Regex(@"<(.*?)>");
 
-            LogAppend("[Worker] Setting up basic enviroment...");
-            SetupBasicEnviroment();
-
-            //LogAppend("[Worker] Setting up resource folder structure...");
-            //SetupStructureFolders(singleEnviromentFolder, combinedEnviromentFolder, combined);
-
             LogAppend("[Worker] Start conversion process...");
+
             if (folder == false)
             {
+
                 tsBar.Maximum = queueList.Items.Count;
                 tsBar.Value = 0;
 
                 foreach (string CurrentItem in queueList.Items)
                 {
+
+                    LogAppend("[Worker] Setting up basic enviroment...");
+                    SetupBasicEnviroment();
+
                     QueueHandler(currentQueue, queueList.Items.Count);
                     tsBar.Value++;
 
