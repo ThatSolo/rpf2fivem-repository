@@ -63,18 +63,22 @@ namespace rpf2fivem.Properties {
         /// <summary>
         ///   Looks up a localized string similar to fx_version &apos;cerulean&apos;
         ///game &apos;gta5&apos;
-        /// 
+        ///
+        ///author &apos;rpf2fivem&apos;
+        ///description &apos;Generated using rpf2fivem, a tool for converting GTA5-Mods to FiveM&apos;
+        ///
         ///files {
-        ///    &apos;data/*.meta&apos;
+        ///    &apos;data/*.meta&apos;,
+        ///    &apos;data/*.xml&apos;,
+        ///    &apos;data/*.dat&apos;,
+        ///    &apos;data/*.ytyp&apos;
         ///}
-        /// 
-        ///data_file &apos;HANDLING_FILE&apos; &apos;data/handling.meta&apos;
-        ///data_file &apos;VEHICLE_METADATA_FILE&apos; &apos;data/vehicles.meta&apos;
-        ///data_file &apos;VEHICLE_METADATA_FILE&apos; &apos;data/vehiclelayouts.meta&apos;
-        ///data_file &apos;CARCOLS_FILE&apos; &apos;data/carcols.meta&apos;
-        ///data_file &apos;VEHICLE_VARIATION_FILE&apos; &apos;data/carvariations.meta&apos;
-        ///-- data_file &apos;VEHICLE_LAYOUTS_FILE&apos; &apos;data/dlctext.meta&apos;
-        ///-- data_file &apos;VEHICLE_METADATA_FILE&apos; &apos;data/contentunlocks.meta&apos;.
+        ///
+        ///data_file &apos;HANDLING_FILE&apos;            &apos;data/handling*.meta&apos;
+        ///data_file &apos;VEHICLE_LAYOUTS_FILE&apos;    &apos;data/vehiclelayouts*.meta&apos;
+        ///data_file &apos;VEHICLE_METADATA_FILE&apos;    &apos;data/vehicles*.meta&apos;
+        ///data_file &apos;CARCOLS_FILE&apos;            &apos;data/carcols*.meta&apos;
+        ///data_file &apos;VEHICLE_VARIATION_FILE&apos;  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fxmanifest_false {
             get {
@@ -85,18 +89,22 @@ namespace rpf2fivem.Properties {
         /// <summary>
         ///   Looks up a localized string similar to fx_version &apos;cerulean&apos;
         ///game &apos;gta5&apos;
-        /// 
+        ///
+        ///author &apos;rpf2fivem&apos;
+        ///description &apos;Generated using rpf2fivem, a tool for converting GTA5-Mods to FiveM&apos;
+        ///
         ///files {
-        ///    &apos;data/**/*.meta&apos;
+        ///    &apos;data/*/*.meta&apos;,
+        ///    &apos;data/*/*.xml&apos;,
+        ///    &apos;data/*/*.dat&apos;,
+        ///    &apos;data/*/*.ytyp&apos;
         ///}
-        /// 
-        ///data_file &apos;HANDLING_FILE&apos; &apos;data/**/handling.meta&apos;
-        ///data_file &apos;VEHICLE_LAYOUTS_FILE&apos; &apos;data/**/vehiclelayouts.meta&apos;
-        ///data_file &apos;VEHICLE_METADATA_FILE&apos; &apos;data/**/vehicles.meta&apos;
-        ///data_file &apos;CARCOLS_FILE&apos; &apos;data/**/carcols.meta&apos;
-        ///data_file &apos;VEHICLE_VARIATION_FILE&apos; &apos;data/**/carvariations.meta&apos;
-        ///-- data_file &apos;DLCTEXT_FILE&apos; &apos;data/**/dlctext.meta&apos;
-        ///-- data_file &apos;CARCONTENTUNLOCKS_FILE&apos; &apos;data/**/carcontentunlocks.meta&apos;.
+        ///
+        ///data_file &apos;HANDLING_FILE&apos;            &apos;data/*/handling*.meta&apos;
+        ///data_file &apos;VEHICLE_LAYOUTS_FILE&apos;    &apos;data/*/vehiclelayouts*.meta&apos;
+        ///data_file &apos;VEHICLE_METADATA_FILE&apos;    &apos;data/*/vehicles*.meta&apos;
+        ///data_file &apos;CARCOLS_FILE&apos;            &apos;data/*/carcols*.meta&apos;
+        ///data_file &apos;VEHICLE_ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fxmanifest_true {
             get {
@@ -111,6 +119,24 @@ namespace rpf2fivem.Properties {
             get {
                 object obj = ResourceManager.GetObject("magic", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to development.
+        /// </summary>
+        internal static string sentry_enviroment {
+            get {
+                return ResourceManager.GetString("sentry_enviroment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to rpf2fivem@combined-support_3.0.0-patch1.
+        /// </summary>
+        internal static string sentry_version {
+            get {
+                return ResourceManager.GetString("sentry_version", resourceCulture);
             }
         }
     }

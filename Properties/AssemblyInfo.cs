@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("https://github.com/Avenze")]
 [assembly: AssemblyProduct("rpf2fivem")]
-[assembly: AssemblyCopyright("Copyright © Avenze 2021")]
+[assembly: AssemblyCopyright("Copyright © Frostcloud Development 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

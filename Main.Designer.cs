@@ -43,7 +43,7 @@
             this.log = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.CombineCheck = new System.Windows.Forms.CheckBox();
             this.CompressCheck = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
@@ -52,7 +52,6 @@
             this.fivemresname_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.btnStart = new System.Windows.Forms.Button();
-            this.reslua = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatus = new System.Windows.Forms.ToolStripStatusLabel();
@@ -185,15 +184,15 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Enabled = false;
-            this.label7.Location = new System.Drawing.Point(196, -3);
+            this.label7.Location = new System.Drawing.Point(86, -3);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(398, 16);
+            this.label7.Size = new System.Drawing.Size(511, 16);
             this.label7.TabIndex = 13;
-            this.label7.Text = "buildname fxmanifest_support | developed by: github.com/Avenze";
+            this.label7.Text = "build rpf2fivem@combined-support_3.0.0-patch1  | developed by: github.com/Avenze";
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.checkBox1);
+            this.groupBox3.Controls.Add(this.CombineCheck);
             this.groupBox3.Controls.Add(this.CompressCheck);
             this.groupBox3.Controls.Add(this.checkBox2);
             this.groupBox3.Controls.Add(this.textBox6);
@@ -208,18 +207,17 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Resource";
             // 
-            // checkBox1
+            // CombineCheck
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Enabled = false;
-            this.checkBox1.Location = new System.Drawing.Point(9, 148);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(268, 20);
-            this.checkBox1.TabIndex = 19;
-            this.checkBox1.Text = "store converted vehicles in one resource";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.CombineCheck.AutoSize = true;
+            this.CombineCheck.Enabled = false;
+            this.CombineCheck.Location = new System.Drawing.Point(9, 148);
+            this.CombineCheck.Name = "CombineCheck";
+            this.CombineCheck.Size = new System.Drawing.Size(268, 20);
+            this.CombineCheck.TabIndex = 19;
+            this.CombineCheck.Text = "store converted vehicles in one resource";
+            this.CombineCheck.UseVisualStyleBackColor = true;
+            this.CombineCheck.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged_2);
             // 
             // CompressCheck
             // 
@@ -304,17 +302,6 @@
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
-            // reslua
-            // 
-            this.reslua.Location = new System.Drawing.Point(482, 499);
-            this.reslua.Multiline = true;
-            this.reslua.Name = "reslua";
-            this.reslua.Size = new System.Drawing.Size(525, 274);
-            this.reslua.TabIndex = 10;
-            this.reslua.Text = resources.GetString("reslua.Text");
-            this.reslua.Visible = false;
-            this.reslua.TextChanged += new System.EventHandler(this.reslua_TextChanged);
-            // 
             // timer1
             // 
             this.timer1.Interval = 5000;
@@ -330,7 +317,7 @@
             this.tsBar});
             this.statusStrip1.Location = new System.Drawing.Point(0, 466);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1088, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1083, 22);
             this.statusStrip1.TabIndex = 14;
             this.statusStrip1.Text = "tsStatus";
             // 
@@ -350,7 +337,7 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(730, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(725, 17);
             this.toolStripStatusLabel1.Spring = true;
             // 
             // tsQueue
@@ -379,9 +366,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1088, 488);
+            this.ClientSize = new System.Drawing.Size(1083, 488);
             this.Controls.Add(this.btnConvertFromFolder);
-            this.Controls.Add(this.reslua);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.groupBox3);
@@ -423,7 +409,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox reslua;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.StatusStrip statusStrip1;
@@ -439,6 +424,6 @@
         private System.Windows.Forms.Button btnConvertFromFolder;
         private System.Windows.Forms.CheckBox CompressCheck;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox CombineCheck;
     }
 }
