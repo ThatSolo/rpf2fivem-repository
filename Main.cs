@@ -53,7 +53,6 @@ namespace rpf2fivem
 
         public Main()
         {
-            InitializeComponent();
             if (!Directory.Exists("./logs"))
             {
                 Directory.CreateDirectory("logs");
@@ -61,7 +60,10 @@ namespace rpf2fivem
             if (!File.Exists(@"./logs/latest.log"))
             {
                 FileStream fs = File.Create(@"./logs/latest.log");
+                fs.Close();
             }
+
+            InitializeComponent();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -968,6 +970,11 @@ namespace rpf2fivem
                 combiner = false;
                 LogAppend("[InputHandler] Combine Helpers switched off");
             }
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
