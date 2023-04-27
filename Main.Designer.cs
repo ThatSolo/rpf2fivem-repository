@@ -210,7 +210,6 @@
             // CombineCheck
             // 
             this.CombineCheck.AutoSize = true;
-            this.CombineCheck.Enabled = false;
             this.CombineCheck.Location = new System.Drawing.Point(9, 148);
             this.CombineCheck.Name = "CombineCheck";
             this.CombineCheck.Size = new System.Drawing.Size(268, 20);
@@ -337,7 +336,7 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(725, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(694, 17);
             this.toolStripStatusLabel1.Spring = true;
             // 
             // tsQueue

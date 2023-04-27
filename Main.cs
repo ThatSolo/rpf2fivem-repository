@@ -35,6 +35,7 @@ namespace rpf2fivem
         bool combiner = false;
         int convertFromFolder_resname;
         static string latestModelName = "";
+        string combinedFolderString = "";
 
         static Dictionary<string, string[]> extensions = new Dictionary<string, string[]>()
         {
@@ -89,8 +90,6 @@ namespace rpf2fivem
                 CompressCheck.Checked = false;
                 CompressCheck.Enabled = false;
             }
-
-            SentrySdk.CaptureMessage("Hello Sentry");
         }
 
         // Helper Functions
@@ -488,7 +487,7 @@ namespace rpf2fivem
         {
             //Assume user types .txt into textbox
             string fileExtension = "*." + type;
-            string[] txtFiles = Directory.GetFiles("cache", fileExtension, SearchOption.AllDirectories);
+            string[] txtFiles = Directory.GetFiles("cache/rpfunpack", fileExtension, SearchOption.AllDirectories); // had to add a more specific directory here aswell, can't check the entire cache folder anymore :weary:
 
             foreach (var item in txtFiles)
             {
@@ -515,7 +514,7 @@ namespace rpf2fivem
         private void RemoveUnnessecary(string type)
         {
             string fileExtension = "*." + type;
-            string[] txtFiles = Directory.GetFiles("cache", fileExtension, SearchOption.AllDirectories);
+            string[] txtFiles = Directory.GetFiles("cache/unpack", fileExtension, SearchOption.AllDirectories); // changed "cache" to "cache/unpack" to only clean the unpack folder, where the magic happens
             foreach (var item in txtFiles)
             {
                 LogAppend("[Worker] Deleting / " + item + " ...");
@@ -570,19 +569,39 @@ namespace rpf2fivem
 
             if (combinedEnv == true)
             {
-                directory = @"./cache/structure/" + combinedFolderName;
-                fxmanifest = fxmanifest_combined;
+                if (Directory.Exists(@"./combinercache"))
+                {
+                    LogAppend("[Worker] Combiner Cache folder exists, checking if there is any valid resource in there...");
+
+                    if (Directory.EnumerateFileSystemEntries(@"./combinercache").Any())
+                    {
+                        LogAppend("[Worker] Found resource in Combiner Cache, moving back to unpacking cache.");
+                        Directory.Move(@"./combinercache/" + combinedFolderName, @"./cache/structure/" + combinedFolderName);
+                    } 
+                    else
+                    {
+                        LogAppend("[Worker] Combiner Cache was empty, likely first processed resource.");
+
+                        directory = @"./cache/structure/" + combinedFolderName;
+                        fxmanifest = fxmanifest_combined;
+
+                        Directory.CreateDirectory(directory);
+                        Directory.CreateDirectory(directory + "/stream/");
+                        Directory.CreateDirectory(directory + "/data/");
+                        File.WriteAllText(directory + @"\fxmanifest.lua", fxmanifest, utf8WithoutBom);
+                    }
+                }
             }
             else
             {
                 directory = @"./cache/structure/" + folderName;
                 fxmanifest = fxmanifest_single;
-            }
 
-            Directory.CreateDirectory(directory);
-            Directory.CreateDirectory(directory + "/stream/");
-            Directory.CreateDirectory(directory + "/data/");
-            File.WriteAllText(directory + @"\fxmanifest.lua", fxmanifest, utf8WithoutBom);
+                Directory.CreateDirectory(directory);
+                Directory.CreateDirectory(directory + "/stream/");
+                Directory.CreateDirectory(directory + "/data/");
+                File.WriteAllText(directory + @"\fxmanifest.lua", fxmanifest, utf8WithoutBom);
+            }
 
             LogAppend("[Worker] Created resource folder structure.");
         }
@@ -627,6 +646,12 @@ namespace rpf2fivem
                 tsBar.Maximum = queueList.Items.Count;
                 tsBar.Value = 0;
 
+                if (combiner == true)
+                {
+                    combinedFolderString = rnd.Next(2147483647).ToString();
+                    Directory.CreateDirectory(@"./combinercache");
+                }
+
                 foreach (string CurrentItem in queueList.Items)
                 {
 
@@ -645,7 +670,7 @@ namespace rpf2fivem
 
                     string filteredresname = "";
                     string SingleEnviromentFolder = regex.Match(CurrentItem).Groups[1].Value;
-                    string CombinedEnviromentFolder = rnd.Next(2147483647).ToString();
+                    string CombinedEnviromentFolder = combinedFolderString;
 
                     string StreamFolder = "";
                     string DataFolder = "";
@@ -693,7 +718,7 @@ namespace rpf2fivem
                     span6.Finish();
                     var span7 = Transaction.StartChild("resourceconversion-removeunnessecary");
 
-                    LogAppend("[Worker] Removing leftover files from the archive...");
+                    LogAppend("[Worker] Removing leftover files from the archive..."); // these functions are deleting the files from the previous combined conversion aswell, I need to figure out a filter for that perhaps
                     RemoveUnnessecary("yft");
                     RemoveUnnessecary("ytd");
                     RemoveUnnessecary("meta");
@@ -725,21 +750,30 @@ namespace rpf2fivem
                     var span10 = Transaction.StartChild("resourceconversion-moveresourcefolder");
 
                     LogAppend("[Worker] Moving resource folder to /resources...");
-                    string VehicleResourceName = "";
                     if (combiner == true)
                     {
-                        Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
-                        VehicleResourceName = CombinedEnviromentFolder;
+                        //Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
+
+                        if (tsBar.Value == queueList.Items.Count)
+                        {
+                            LogAppend("[Worker] Moving resource folder to /resources as all conversions are finished.");
+                            Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
+                            Directory.Delete(@"./combinercache");
+                        } 
+                        else
+                        {
+                            LogAppend("[Worker] Moving resource folder to Combiner Cache as the unpacking is not finished yet.");
+                            Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./combinercache/" + CombinedEnviromentFolder);
+                        }
+
                     }
                     else
                     {
                         Directory.Move(@"./cache/structure/" + SingleEnviromentFolder, @"./resources/" + SingleEnviromentFolder);
-                        VehicleResourceName = SingleEnviromentFolder;
+                        CfgHelper(SingleEnviromentFolder);
                     }
 
-                    CfgHelper(VehicleResourceName);
-
-                    LogAppend("[Worker] Conversion of vehicle " + VehicleResourceName + " has finished, cleaning up...");
+                    LogAppend("[Worker] Conversion of vehicle " + SingleEnviromentFolder ?? CombinedEnviromentFolder + " has finished, cleaning up..."); // forgot that C# actually has null coalescing operators
                     currentQueue += 1;
                     cleanUp();
                     StopwatchTimer.Stop();
