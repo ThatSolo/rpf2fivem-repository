@@ -52,7 +52,6 @@
             this.fivemresname_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.btnStart = new System.Windows.Forms.Button();
-            this.reslua = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatus = new System.Windows.Forms.ToolStripStatusLabel();
@@ -303,17 +302,6 @@
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
-            // reslua
-            // 
-            this.reslua.Location = new System.Drawing.Point(482, 499);
-            this.reslua.Multiline = true;
-            this.reslua.Name = "reslua";
-            this.reslua.Size = new System.Drawing.Size(525, 274);
-            this.reslua.TabIndex = 10;
-            this.reslua.Text = resources.GetString("reslua.Text");
-            this.reslua.Visible = false;
-            this.reslua.TextChanged += new System.EventHandler(this.reslua_TextChanged);
-            // 
             // timer1
             // 
             this.timer1.Interval = 5000;
@@ -329,7 +317,7 @@
             this.tsBar});
             this.statusStrip1.Location = new System.Drawing.Point(0, 466);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1088, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1083, 22);
             this.statusStrip1.TabIndex = 14;
             this.statusStrip1.Text = "tsStatus";
             // 
@@ -349,7 +337,7 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(730, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(725, 17);
             this.toolStripStatusLabel1.Spring = true;
             // 
             // tsQueue
@@ -378,9 +366,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1088, 488);
+            this.ClientSize = new System.Drawing.Size(1083, 488);
             this.Controls.Add(this.btnConvertFromFolder);
-            this.Controls.Add(this.reslua);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.groupBox3);
@@ -422,7 +409,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox reslua;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.StatusStrip statusStrip1;

@@ -744,6 +744,7 @@ namespace rpf2fivem
                     cleanUp();
                     StopwatchTimer.Stop();
                     jobTime.Text = "| Last job took: " + StopwatchTimer.ElapsedMilliseconds + " ms";
+                    span10.Finish();
                     Transaction.Finish();
                 }
             }
@@ -861,7 +862,7 @@ namespace rpf2fivem
                     var filePath = openFileDialog.FileName;
                     var safeFileName = openFileDialog.SafeFileName;
                     LogAppend("[Worker] Converting resource at " + filePath);
-                    startConversion(true, filePath, safeFileName);
+                    await startConversion(true, filePath, safeFileName);
 
                 }
             }
@@ -883,7 +884,7 @@ namespace rpf2fivem
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            startConversion(false, "", "");
+            await startConversion(false, "", "");
         }
 
         private void btnAddQueue_Click(object sender, EventArgs e)
