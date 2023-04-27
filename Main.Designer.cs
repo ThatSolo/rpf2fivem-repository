@@ -185,11 +185,11 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Enabled = false;
-            this.label7.Location = new System.Drawing.Point(130, -3);
+            this.label7.Location = new System.Drawing.Point(86, -3);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(467, 16);
+            this.label7.Size = new System.Drawing.Size(511, 16);
             this.label7.TabIndex = 13;
-            this.label7.Text = "build rpf2fivem@combined-support_3.0.0  | developed by: github.com/Avenze";
+            this.label7.Text = "build rpf2fivem@combined-support_3.0.0-patch1  | developed by: github.com/Avenze";
             // 
             // groupBox3
             // 
@@ -211,6 +211,7 @@
             // CombineCheck
             // 
             this.CombineCheck.AutoSize = true;
+            this.CombineCheck.Enabled = false;
             this.CombineCheck.Location = new System.Drawing.Point(9, 148);
             this.CombineCheck.Name = "CombineCheck";
             this.CombineCheck.Size = new System.Drawing.Size(268, 20);

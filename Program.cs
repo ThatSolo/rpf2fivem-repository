@@ -21,7 +21,7 @@ namespace rpf2fivem
             {
                 o.Dsn = "https://d40cb8d380bf40a0a1b8c99f0d214978@o1113761.ingest.sentry.io/4504494068334592";
                 o.Debug = true;
-                o.TracesSampleRate = 1.0;
+                o.TracesSampleRate = 0.5;
                 o.IsGlobalModeEnabled = true;
                 o.Release = Properties.Resources.sentry_version;
                 o.AutoSessionTracking = true;

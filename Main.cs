@@ -630,6 +630,13 @@ namespace rpf2fivem
                 foreach (string CurrentItem in queueList.Items)
                 {
 
+                    var Transaction = SentrySdk.StartTransaction(
+                        "resourceconversion",
+                        "resourceconversion-start"
+                    );
+
+                    var span1 = Transaction.StartChild("resourceconversion-setupenviroment");
+
                     LogAppend("[Worker] Setting up basic enviroment...");
                     SetupBasicEnviroment();
 
@@ -644,13 +651,22 @@ namespace rpf2fivem
                     string DataFolder = "";
                     var StopwatchTimer = Stopwatch.StartNew();
 
+                    span1.Finish();
+                    var span2 = Transaction.StartChild("resourceconversion-setupstructure");
+
                     LogAppend("[Worker] Setting up resource folder structure...");
                     SetupStructureFolders(SingleEnviromentFolder, CombinedEnviromentFolder, combiner);
+
+                    span2.Finish();
+                    var span3 = Transaction.StartChild("resourceconversion-fetchfolders");
 
                     LogAppend("[Worker] Fetching resource stream and data folders...");
                     var StructureFolders = CreateDataFolders(SingleEnviromentFolder, CombinedEnviromentFolder, combiner);
                     StreamFolder = StructureFolders.streamFolder;
                     DataFolder = StructureFolders.dataFolder;
+
+                    span3.Finish();
+                    var span4 = Transaction.StartChild("resourceconversion-downloadarchive");
 
                     LogAppend("[Worker] Downloading archive...");
                     if (CurrentItem != "")
@@ -658,20 +674,32 @@ namespace rpf2fivem
                         await AsyncFileDownload(CurrentItem.Replace($"<{SingleEnviromentFolder}>", ""));
                     }
 
+                    span4.Finish();
+                    var span5 = Transaction.StartChild("resourceconversion-movearchive");
+
                     LogAppend("[Worker] Moving archives to cache...");
                     HideShellCmd(@"move *.rar cache");
                     HideShellCmd(@"move *.zip cache");
                     HideShellCmd(@"move *.7z cache");
+
+                    span5.Finish();
+                    var span6 = Transaction.StartChild("resourceconversion-decompressarchive");
 
                     LogAppend("[SharpCompress] Decompressing...");
                     await Task.Delay(500);
                     universalCacheUnpack();
                     await Task.Delay(2500);
 
+                    span6.Finish();
+                    var span7 = Transaction.StartChild("resourceconversion-removeunnessecary");
+
                     LogAppend("[Worker] Removing leftover files from the archive...");
                     RemoveUnnessecary("yft");
                     RemoveUnnessecary("ytd");
                     RemoveUnnessecary("meta");
+
+                    span7.Finish();
+                    var span8 = Transaction.StartChild("resourceconversion-unpackrpf");
 
                     LogAppend("[CodeWalker] Searching for dlc.rpf...");
                     try
@@ -684,11 +712,17 @@ namespace rpf2fivem
                         ErrorAppend("[CodeWalker] Failed to extract dlc.rpf, stack trace: " + ex);
                     }
 
+                    span8.Finish();
+                    var span9 = Transaction.StartChild("resourceconversion-inflateresourcefolder");
+
                     LogAppend("[Worker] Moving items from cache to resource folder."); // Clean cache from unused files, such as fragments and texture dictionaries.
                     await Task.Delay(5000);
                     InflateResourceFolder(StreamFolder, DataFolder, "meta", false, false, false);
                     InflateResourceFolder(StreamFolder, DataFolder, "yft", false, true, false);
                     InflateResourceFolder(StreamFolder, DataFolder, "ytd", true, false, false);
+
+                    span9.Finish();
+                    var span10 = Transaction.StartChild("resourceconversion-moveresourcefolder");
 
                     LogAppend("[Worker] Moving resource folder to /resources...");
                     string VehicleResourceName = "";
@@ -710,6 +744,7 @@ namespace rpf2fivem
                     cleanUp();
                     StopwatchTimer.Stop();
                     jobTime.Text = "| Last job took: " + StopwatchTimer.ElapsedMilliseconds + " ms";
+                    Transaction.Finish();
                 }
             }
             else
