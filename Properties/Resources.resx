@@ -166,9 +166,9 @@ data_file 'PTFXASSETINFO_FILE' 'data/*/ptfxassetinfo.meta'</value>
     <value>..\Resources\magic.dat;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="sentry_enviroment" xml:space="preserve">
-    <value>development</value>
+    <value>prerelease</value>
   </data>
   <data name="sentry_version" xml:space="preserve">
-    <value>rpf2fivem@combined-support_3.0.0-patch1</value>
+    <value>rpf2fivem@combined-support_3.1.0-patch1</value>
   </data>
 </root>

@@ -82,6 +82,9 @@ namespace CodeWalker.GameFiles
         Yfd = 26,
         Heightmap = 27,
         Watermap = 28,
+        Mrf = 29,
+        DistantLights = 30,
+        Ypdb = 31,
     }
 
 
