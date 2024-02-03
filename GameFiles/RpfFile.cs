@@ -215,6 +215,11 @@ namespace CodeWalker.GameFiles
 
                 namesrdr.Position = e.NameOffset;
                 e.Name = namesrdr.ReadString();
+                if (e.Name.Length > 256)
+                {
+                    // long names can freeze the RPFExplorer
+                    e.Name = e.Name.Substring(0, 256);
+                }
                 e.NameLower = e.Name.ToLowerInvariant();
 
                 if ((e is RpfFileEntry) && string.IsNullOrEmpty(e.Name))
@@ -268,10 +273,6 @@ namespace CodeWalker.GameFiles
 
         }
 
-
-
-
-
         public bool ScanStructure(Action<string> updateStatus, Action<string> errorLog)
         {
             using (BinaryReader br = new BinaryReader(File.OpenRead(FilePath)))
@@ -292,6 +293,7 @@ namespace CodeWalker.GameFiles
             }
             return true;
         }
+
         private void ScanStructure(BinaryReader br, Action<string> updateStatus, Action<string> errorLog)
         {
             ReadHeader(br);
@@ -316,7 +318,7 @@ namespace CodeWalker.GameFiles
 
                         //search all the sub resources for YSC files. (recurse!)
                         string lname = binentry.NameLower;
-                        if (lname.EndsWith(".rpf"))
+                        if (lname.EndsWith(".rpf") && binentry.Path.Length < 5000) // a long path is most likely an attempt to crash CW, so skip it
                         {
                             br.BaseStream.Position = StartPos + ((long)binentry.FileOffset * 512);
 
@@ -902,19 +904,21 @@ namespace CodeWalker.GameFiles
             {
                 using (DeflateStream ds = new DeflateStream(new MemoryStream(bytes), CompressionMode.Decompress))
                 {
-                    MemoryStream outstr = new MemoryStream();
-                    ds.CopyTo(outstr);
-                    byte[] deflated = outstr.GetBuffer();
-                    byte[] outbuf = new byte[outstr.Length]; //need to copy to the right size buffer for output.
-                    Array.Copy(deflated, outbuf, outbuf.Length);
-
-                    if (outbuf.Length <= bytes.Length)
+                    using (var outstr = new MemoryStream())
                     {
-                        LastError = "Warning: Decompressed data was smaller than compressed data...";
-                        //return null; //could still be OK for tiny things!
-                    }
+                        ds.CopyTo(outstr);
+                        byte[] deflated = outstr.GetBuffer();
+                        byte[] outbuf = new byte[outstr.Length]; //need to copy to the right size buffer for output.
+                        Buffer.BlockCopy(deflated, 0, outbuf, 0, outbuf.Length);
 
-                    return outbuf;
+                        if (outbuf.Length <= bytes.Length)
+                        {
+                            LastError = "Warning: Decompressed data was smaller than compressed data...";
+                            //return null; //could still be OK for tiny things!
+                        }
+
+                        return outbuf;
+                    }
                 }
             }
             catch (Exception ex)
@@ -928,13 +932,15 @@ namespace CodeWalker.GameFiles
         {
             using (MemoryStream ms = new MemoryStream())
             {
-                DeflateStream ds = new DeflateStream(ms, CompressionMode.Compress, true);
-                ds.Write(data, 0, data.Length);
-                ds.Close();
-                byte[] deflated = ms.GetBuffer();
-                byte[] outbuf = new byte[ms.Length]; //need to copy to the right size buffer...
-                Array.Copy(deflated, outbuf, outbuf.Length);
-                return outbuf;
+                using (var ds = new DeflateStream(ms, CompressionMode.Compress, true))
+                {
+                    ds.Write(data, 0, data.Length);
+                    ds.Close();
+                    byte[] deflated = ms.GetBuffer();
+                    byte[] outbuf = new byte[ms.Length]; //need to copy to the right size buffer...
+                    Buffer.BlockCopy(deflated, 0, outbuf, 0, outbuf.Length);
+                    return outbuf;
+                }
             }
         }
 

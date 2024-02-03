@@ -115,6 +115,7 @@
     <Compile Include="GameFiles\FileTypes\Gxt2File.cs" />
     <Compile Include="GameFiles\FileTypes\HeightmapFile.cs" />
     <Compile Include="GameFiles\FileTypes\JPsoFile.cs" />
+    <Compile Include="GameFiles\FileTypes\MrfFile.cs" />
     <Compile Include="GameFiles\FileTypes\PedFile.cs" />
     <Compile Include="GameFiles\FileTypes\PedsFile.cs" />
     <Compile Include="GameFiles\FileTypes\RelFile.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="GameFiles\FileTypes\YmtFile.cs" />
     <Compile Include="GameFiles\FileTypes\YndFile.cs" />
     <Compile Include="GameFiles\FileTypes\YnvFile.cs" />
+    <Compile Include="GameFiles\FileTypes\YpdbFile.cs" />
     <Compile Include="GameFiles\FileTypes\YptFile.cs" />
     <Compile Include="GameFiles\FileTypes\YtdFile.cs" />
     <Compile Include="GameFiles\FileTypes\YtypFile.cs" />

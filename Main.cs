@@ -732,6 +732,45 @@ namespace rpf2fivem
                     try
                     {
                         RpfUnpack(filteredresname, "");
+
+                        span8.Finish();
+                        var span9 = Transaction.StartChild("resourceconversion-inflateresourcefolder");
+
+                        LogAppend("[Worker] Moving items from cache to resource folder."); // Clean cache from unused files, such as fragments and texture dictionaries.
+                        await Task.Delay(5000);
+                        InflateResourceFolder(StreamFolder, DataFolder, "meta", false, false, false);
+                        InflateResourceFolder(StreamFolder, DataFolder, "yft", false, true, false);
+                        InflateResourceFolder(StreamFolder, DataFolder, "ytd", true, false, false);
+
+                        span9.Finish();
+                        var span10 = Transaction.StartChild("resourceconversion-moveresourcefolder");
+
+                        LogAppend("[Worker] Moving resource folder to /resources...");
+                        if (combiner == true)
+                        {
+                            //Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
+
+                            if (tsBar.Value == queueList.Items.Count)
+                            {
+                                LogAppend("[Worker] Moving resource folder to /resources as all conversions are finished.");
+                                Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
+                                Directory.Delete(@"./combinercache");
+                            }
+                            else
+                            {
+                                LogAppend("[Worker] Moving resource folder to Combiner Cache as the unpacking is not finished yet.");
+                                Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./combinercache/" + CombinedEnviromentFolder);
+                            }
+
+                        }
+                        else
+                        {
+                            Directory.Move(@"./cache/structure/" + SingleEnviromentFolder, @"./resources/" + SingleEnviromentFolder);
+                            CfgHelper(SingleEnviromentFolder);
+                        }
+
+                        LogAppend("[Worker] Conversion of vehicle " + SingleEnviromentFolder ?? CombinedEnviromentFolder + " has finished, cleaning up..."); // forgot that C# actually has null coalescing operators
+                        span10.Finish();
                     }
                     catch (Exception ex)
                     {
@@ -739,48 +778,10 @@ namespace rpf2fivem
                         ErrorAppend("[CodeWalker] Failed to extract dlc.rpf, stack trace: " + ex);
                     }
 
-                    span8.Finish();
-                    var span9 = Transaction.StartChild("resourceconversion-inflateresourcefolder");
-
-                    LogAppend("[Worker] Moving items from cache to resource folder."); // Clean cache from unused files, such as fragments and texture dictionaries.
-                    await Task.Delay(5000);
-                    InflateResourceFolder(StreamFolder, DataFolder, "meta", false, false, false);
-                    InflateResourceFolder(StreamFolder, DataFolder, "yft", false, true, false);
-                    InflateResourceFolder(StreamFolder, DataFolder, "ytd", true, false, false);
-
-                    span9.Finish();
-                    var span10 = Transaction.StartChild("resourceconversion-moveresourcefolder");
-
-                    LogAppend("[Worker] Moving resource folder to /resources...");
-                    if (combiner == true)
-                    {
-                        //Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
-
-                        if (tsBar.Value == queueList.Items.Count)
-                        {
-                            LogAppend("[Worker] Moving resource folder to /resources as all conversions are finished.");
-                            Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
-                            Directory.Delete(@"./combinercache");
-                        } 
-                        else
-                        {
-                            LogAppend("[Worker] Moving resource folder to Combiner Cache as the unpacking is not finished yet.");
-                            Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./combinercache/" + CombinedEnviromentFolder);
-                        }
-
-                    }
-                    else
-                    {
-                        Directory.Move(@"./cache/structure/" + SingleEnviromentFolder, @"./resources/" + SingleEnviromentFolder);
-                        CfgHelper(SingleEnviromentFolder);
-                    }
-
-                    LogAppend("[Worker] Conversion of vehicle " + SingleEnviromentFolder ?? CombinedEnviromentFolder + " has finished, cleaning up..."); // forgot that C# actually has null coalescing operators
                     currentQueue += 1;
                     cleanUp();
                     StopwatchTimer.Stop();
                     jobTime.Text = "| Last job took: " + StopwatchTimer.ElapsedMilliseconds + " ms";
-                    span10.Finish();
                     Transaction.Finish();
                 }
             }
@@ -796,8 +797,12 @@ namespace rpf2fivem
                 string DataFolder = "";
                 var StopwatchTimer = Stopwatch.StartNew();
 
+                LogAppend("[Worker] Setting up basic enviroment...");
+                SetupBasicEnviroment();
+
                 LogAppend("[Worker] Moving selected archive to cache...");
-                File.Move(resource, @"./cache/" + saferesource);
+                //File.Move(resource, @"./cache/" + saferesource);
+                HideShellCmd(@"move " + resource + " cache");
 
                 LogAppend("[Worker] Setting up resource folder structure...");
                 SetupStructureFolders(SingleEnviromentFolder, "", false);
@@ -821,6 +826,19 @@ namespace rpf2fivem
                 try
                 {
                     RpfUnpack(filteredresname, "");
+
+                    LogAppend("[Worker] Moving items from cache to resource folder."); // Clean cache from unused files, such as fragments and texture dictionaries.
+                    await Task.Delay(5000);
+                    InflateResourceFolder(StreamFolder, DataFolder, "meta", false, false, false);
+                    InflateResourceFolder(StreamFolder, DataFolder, "yft", false, true, false);
+                    InflateResourceFolder(StreamFolder, DataFolder, "ytd", true, false, false);
+
+                    LogAppend("[Worker] Moving converted resource into /resources folder.");
+                    Directory.Move(@"./cache/structure/" + SingleEnviromentFolder, @"./resources/" + SingleEnviromentFolder);
+
+                    CfgHelper(SingleEnviromentFolder);
+
+                    LogAppend("[Worker] Conversion of vehicle " + SingleEnviromentFolder + " has finished, cleaning up...");
                 }
                 catch (Exception ex)
                 {
@@ -828,18 +846,6 @@ namespace rpf2fivem
                     ErrorAppend("[CodeWalker] Failed to extract dlc.rpf, stack trace: " + ex);
                 }
 
-                LogAppend("[Worker] Moving items from cache to resource folder."); // Clean cache from unused files, such as fragments and texture dictionaries.
-                await Task.Delay(5000);
-                InflateResourceFolder(StreamFolder, DataFolder, "meta", false, false, false);
-                InflateResourceFolder(StreamFolder, DataFolder, "yft", false, true, false);
-                InflateResourceFolder(StreamFolder, DataFolder, "ytd", true, false, false);
-
-                LogAppend("[Worker] Moving converted resource into /resources folder.");
-                Directory.Move(@"./cache/structure/" + SingleEnviromentFolder, @"./resources/" + SingleEnviromentFolder);
-
-                CfgHelper(SingleEnviromentFolder);
-
-                LogAppend("[Worker] Conversion of vehicle " + SingleEnviromentFolder + " has finished, cleaning up...");
                 currentQueue += 1;
                 cleanUp();
                 StopwatchTimer.Stop();

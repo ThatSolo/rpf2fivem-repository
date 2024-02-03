@@ -315,7 +315,7 @@ namespace CodeWalker.GameFiles
                     YmapEntityDef d = alldefs[i];
                     int pind = d._CEntityDef.parentIndex;
                     bool isroot = false;
-                    if ((pind < 0) || (pind >= alldefs.Count) || (pind >= i)) //index check? might be a problem
+                    if ((pind < 0) || (pind >= alldefs.Count) || d.LodInParentYmap)
                     {
                         isroot = true;
                     }
@@ -912,7 +912,7 @@ namespace CodeWalker.GameFiles
                                     }
                                     //pind = 0;
                                 }
-                                if ((pind >= 0) && (pind < AllEntities.Length))
+                                if ((pind >= 0) && (pind < AllEntities.Length) && !rcent.LodInParentYmap)
                                 {
                                     var pentity = AllEntities[pind];
                                     pentity.AddChild(rcent);
@@ -967,6 +967,15 @@ namespace CodeWalker.GameFiles
                         { }//should only happen if parent ymap not loaded yet...
                     }
                 }
+            }
+            if (LODLights != null)
+            {
+                if (Parent?.DistantLODLights != null)
+                {
+                    LODLights.Init(Parent.DistantLODLights);
+                }
+                else
+                { }
             }
         }
 
@@ -1323,6 +1332,31 @@ namespace CodeWalker.GameFiles
 
 
 
+        public void SetName(string newname)
+        {
+            var newnamel = newname.ToLowerInvariant();
+            var newnamex = newname + ".ymap";
+            var newnamexl = newname.ToLowerInvariant();
+            var newhash = JenkHash.GenHash(newnamel);
+            JenkIndex.Ensure(newnamel);
+            if (RpfFileEntry != null)
+            {
+                RpfFileEntry.Name = newnamex;
+                RpfFileEntry.NameLower = newnamexl;
+                RpfFileEntry.NameHash = JenkHash.GenHash(newnamexl);
+                RpfFileEntry.ShortNameHash = newhash;
+            }
+            Name = newnamex;
+            _CMapData.name = newhash;
+        }
+        public void SetFilePath(string filepath)
+        {
+            FilePath = filepath.ToLowerInvariant();
+            var newname = Path.GetFileNameWithoutExtension(filepath);
+            SetName(newname);
+        }
+
+
         public bool CalcFlags()
         {
             uint flags = 0;
@@ -1380,6 +1414,7 @@ namespace CodeWalker.GameFiles
             if ((DistantLODLights != null) && ((DistantLODLights.positions?.Length ?? 0) > 0))
             {
                 flags = SetBit(flags, 1); //2
+                contentFlags = SetBit(contentFlags, 8); //256
             }
             if ((BoxOccluders != null) || (OccludeModels != null))
             {
@@ -1678,6 +1713,12 @@ namespace CodeWalker.GameFiles
 
         public LinkedList<YmapEntityDef> LodManagerChildren = null;
         public object LodManagerRenderable = null;
+
+
+        public LightInstance[] Lights { get; set; }
+        //public uint[] LightHashTest { get; set; }
+
+        public bool LodInParentYmap { get { return ((_CEntityDef.flags >> 3) & 1) > 0; } }
 
 
         public string Name
@@ -2068,6 +2109,155 @@ namespace CodeWalker.GameFiles
             return _CEntityDef.ToString() + ((ChildList != null) ? (" (" + ChildList.Count.ToString() + " children) ") : " ") + _CEntityDef.lodLevel.ToString();
         }
 
+
+
+        public void EnsureLights(DrawableBase db)
+        {
+            if (Lights != null) return;
+            if (Archetype == null) return;
+            if (db == null) return;
+
+            var dd = db as Drawable;
+            var fd = db as FragDrawable;
+            var skel = db.Skeleton;
+            LightAttributes[] lightAttrs = null;
+            Bounds b = null;
+            if (dd != null)
+            {
+                lightAttrs = dd.LightAttributes?.data_items;
+                b = dd.Bound;
+            }
+            else if (fd != null)
+            {
+                var frag = fd?.OwnerFragment;
+                skel = skel ?? frag?.Drawable?.Skeleton;
+                lightAttrs = frag?.LightAttributes?.data_items;
+                b = frag?.PhysicsLODGroup?.PhysicsLOD1?.Bound;
+            }
+            if (lightAttrs == null) return;
+
+            var abmin = Vector3.Min(Archetype.BBMin, db.BoundingBoxMin);
+            var abmax = Vector3.Max(Archetype.BBMax, db.BoundingBoxMax);
+            if (b != null)
+            {
+                abmin = Vector3.Min(abmin, b.BoxMin);
+                abmax = Vector3.Max(abmax, b.BoxMax);
+            }
+            var bb = new BoundingBox(abmin, abmax).Transform(Position, Orientation, Scale);
+            var ints = new uint[7];
+            ints[0] = (uint)(bb.Minimum.X * 10.0f);
+            ints[1] = (uint)(bb.Minimum.Y * 10.0f);
+            ints[2] = (uint)(bb.Minimum.Z * 10.0f);
+            ints[3] = (uint)(bb.Maximum.X * 10.0f);
+            ints[4] = (uint)(bb.Maximum.Y * 10.0f);
+            ints[5] = (uint)(bb.Maximum.Z * 10.0f);
+
+            var bones = skel?.BonesMap;
+            var exts = (Archetype.Extensions?.Length ?? 0);// + (Extensions?.Length ?? 0);//seems entity extensions aren't included in this
+            //todo: create extension light instances
+
+            var lightInsts = new LightInstance[lightAttrs.Length];
+            for (int i = 0; i < lightAttrs.Length; i++)
+            {
+                ints[6] = (uint)(exts + i);
+                var la = lightAttrs[i];
+
+                var xform = Matrix.Identity;
+                if ((bones != null) && (bones.TryGetValue(la.BoneId, out Bone bone)))
+                {
+                    xform = bone.AbsTransform;
+                }
+
+                var li = new LightInstance();
+                li.Attributes = la;
+                li.Hash = ComputeLightHash(ints);
+                li.Position = Orientation.Multiply(xform.Multiply(la.Position)) + Position;
+                li.Direction = Orientation.Multiply(xform.MultiplyRot(la.Direction));
+                lightInsts[i] = li;
+            }
+            Lights = lightInsts;
+
+            //LightHashTest = new uint[25];
+            //for (int i = 0; i < 25; i++)
+            //{
+            //    ints[6] = (uint)(i);
+            //    LightHashTest[i] = ComputeLightHash(ints);
+            //}
+
+        }
+
+
+        public static uint ComputeLightHash(uint[] ints, uint seed = 0)
+        {
+            var a2 = ints.Length;
+            var v3 = a2;
+            var v5 = (uint)(seed + 0xDEADBEEF + 4 * ints.Length);
+            var v6 = v5;
+            var v7 = v5;
+
+            var c = 0;
+            for (var i = 0; i < (ints.Length - 4) / 3 + 1; i++, v3 -= 3, c += 3)
+            {
+                var v9 = ints[c + 2] + v5;
+                var v10 = ints[c + 1] + v6;
+                var v11 = ints[c] - v9;
+                var v13 = v10 + v9;
+                var v14 = (v7 + v11) ^ BitUtil.RotateLeft(v9, 4);
+                var v15 = v10 - v14;
+                var v17 = v13 + v14;
+                var v18 = v15 ^ BitUtil.RotateLeft(v14, 6);
+                var v19 = v13 - v18;
+                var v21 = v17 + v18;
+                var v22 = v19 ^ BitUtil.RotateLeft(v18, 8);
+                var v23 = v17 - v22;
+                var v25 = v21 + v22;
+                var v26 = v23 ^ BitUtil.RotateLeft(v22, 16);
+                var v27 = v21 - v26;
+                var v29 = v27 ^ BitUtil.RotateRight(v26, 13);
+                var v30 = v25 - v29;
+                v7 = v25 + v26;
+                v6 = v7 + v29;
+                v5 = v30 ^ BitUtil.RotateLeft(v29, 4);
+            }
+
+            if (v3 == 3)
+            {
+                v5 += ints[c + 2];
+            }
+
+            if (v3 >= 2)
+            {
+                v6 += ints[c + 1];
+            }
+
+            if (v3 >= 1)
+            {
+                var v34 = (v6 ^ v5) - BitUtil.RotateLeft(v6, 14);
+                var v35 = (v34 ^ (v7 + ints[c])) - BitUtil.RotateLeft(v34, 11);
+                var v36 = (v35 ^ v6) - BitUtil.RotateRight(v35, 7);
+                var v37 = (v36 ^ v34) - BitUtil.RotateLeft(v36, 16);
+                var v38 = BitUtil.RotateLeft(v37, 4);
+                var v39 = (((v35 ^ v37) - v38) ^ v36) - BitUtil.RotateLeft((v35 ^ v37) - v38, 14);
+                return (v39 ^ v37) - BitUtil.RotateRight(v39, 8);
+            }
+
+            return v5;
+        }
+
+
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public class LightInstance
+        {
+            public LightAttributes Attributes { get; set; } //just for display purposes!
+            public uint Hash { get; set; }
+            public Vector3 Position { get; set; }
+            public Vector3 Direction { get; set; }
+
+            public override string ToString()
+            {
+                return Hash.ToString() + ": " + Attributes.Type.ToString();
+            }
+        }
     }
 
 
@@ -2661,6 +2851,13 @@ namespace CodeWalker.GameFiles
         {
             if (parent == null) return;
 
+            BuildLodLights(parent);
+            CalcBB();
+            BuildBVH();
+        }
+
+        public void BuildLodLights(YmapDistantLODLights parent)
+        {
             var n = direction?.Length ?? 0;
             n = Math.Min(n, parent.positions?.Length ?? 0);
             n = Math.Min(n, parent.colours?.Length ?? 0);
@@ -2680,9 +2877,6 @@ namespace CodeWalker.GameFiles
                 l.Init(this, parent, i);
                 LodLights[i] = l;
             }
-
-            CalcBB();
-            BuildBVH();
         }
 
         public void BuildBVH()
@@ -2838,6 +3032,7 @@ namespace CodeWalker.GameFiles
             }
         }
 
+        public bool Enabled { get; set; } = true;
 
         public void Init(YmapLODLights l, YmapDistantLODLights p, int i)
         {
@@ -3114,6 +3309,7 @@ namespace CodeWalker.GameFiles
             Vertices = MetaTypes.ConvertDataArray<Vector3>(Data, 0, vertexCount);
             Indices = new byte[indexCount];
             Buffer.BlockCopy(Data, indicesOffset, Indices, 0, indexCount);
+            BuildTriangles();
         }
 
 

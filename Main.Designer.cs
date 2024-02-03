@@ -188,7 +188,7 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(511, 16);
             this.label7.TabIndex = 13;
-            this.label7.Text = "build rpf2fivem@combined-support_3.1.0-patch1  | developed by: github.com/Avenze";
+            this.label7.Text = "build rpf2fivem@combined-support_3.1.0-patch3  | developed by: github.com/Avenze";
             this.label7.Click += new System.EventHandler(this.label7_Click);
             // 
             // groupBox3
