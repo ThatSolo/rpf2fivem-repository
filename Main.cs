@@ -82,6 +82,7 @@ namespace rpf2fivem
             LogAppend("GTA5-Mods links must look like this: ");
             LogAppend("https://files.gta5-mods.com/uploads/XXXCARNAMEXXXX/XXXCARNAMEXXXX.zip");
             LogAppend("Links must be DIRECT link else they won't download!");
+            LogAppend("");
 
             if (!Directory.Exists("./NConvert"))
             {
@@ -802,7 +803,7 @@ namespace rpf2fivem
 
                 LogAppend("[Worker] Moving selected archive to cache...");
                 //File.Move(resource, @"./cache/" + saferesource);
-                HideShellCmd(@"move " + resource + " cache");
+                HideShellCmd("move \"" + resource + "\" cache");
 
                 LogAppend("[Worker] Setting up resource folder structure...");
                 SetupStructureFolders(SingleEnviromentFolder, "", false);
