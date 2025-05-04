@@ -40,7 +40,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>5</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -184,6 +184,12 @@
     <Compile Include="GameFiles\Utils\GTACrypto.cs" />
     <Compile Include="GameFiles\Utils\GTAKeys.cs" />
     <Compile Include="GameFiles\Utils\Jenk.cs" />
+    <Compile Include="HelperWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HelperWindow.Designer.cs">
+      <DependentUpon>HelperWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -219,6 +225,9 @@
     <Compile Include="World\Watermaps.cs" />
     <Compile Include="World\Weapon.cs" />
     <Compile Include="World\Weather.cs" />
+    <EmbeddedResource Include="HelperWindow.resx">
+      <DependentUpon>HelperWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>

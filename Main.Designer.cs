@@ -40,15 +40,12 @@
             this.gta5mods_status = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.log = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.CombineCheck = new System.Windows.Forms.CheckBox();
+            this.QbCoreHelper = new System.Windows.Forms.CheckBox();
             this.CompressCheck = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.VmenuCheck = new System.Windows.Forms.CheckBox();
+            this.QbxCoreHelper = new System.Windows.Forms.CheckBox();
             this.fivemresname_tb = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.btnStart = new System.Windows.Forms.Button();
@@ -59,7 +56,6 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsQueue = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.btnConvertFromFolder = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -126,7 +122,7 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(9, 94);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(48, 16);
+            this.label8.Size = new System.Drawing.Size(47, 16);
             this.label8.TabIndex = 16;
             this.label8.Text = "Queue";
             // 
@@ -147,7 +143,7 @@
             this.gta5mods_status.ForeColor = System.Drawing.Color.Crimson;
             this.gta5mods_status.Location = new System.Drawing.Point(377, 20);
             this.gta5mods_status.Name = "gta5mods_status";
-            this.gta5mods_status.Size = new System.Drawing.Size(75, 16);
+            this.gta5mods_status.Size = new System.Drawing.Size(74, 16);
             this.gta5mods_status.TabIndex = 10;
             this.gta5mods_status.Text = "BAD LINK";
             // 
@@ -156,20 +152,30 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(88, 16);
+            this.label1.Size = new System.Drawing.Size(87, 16);
             this.label1.TabIndex = 0;
             this.label1.Text = "Add to queue";
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.log);
-            this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Location = new System.Drawing.Point(476, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(603, 456);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Log";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Enabled = false;
+            this.label2.Location = new System.Drawing.Point(160, -3);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(435, 16);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "build rpf2fivem@helper-scripts_4.0.0 | developed by: github.com/Avenze";
             // 
             // log
             // 
@@ -180,25 +186,11 @@
             this.log.Size = new System.Drawing.Size(591, 433);
             this.log.TabIndex = 0;
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Enabled = false;
-            this.label7.Location = new System.Drawing.Point(86, -3);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(511, 16);
-            this.label7.TabIndex = 13;
-            this.label7.Text = "build rpf2fivem@combined-support_3.1.0-patch4  | developed by: github.com/Avenze";
-            this.label7.Click += new System.EventHandler(this.label7_Click);
-            // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.CombineCheck);
+            this.groupBox3.Controls.Add(this.QbCoreHelper);
             this.groupBox3.Controls.Add(this.CompressCheck);
-            this.groupBox3.Controls.Add(this.checkBox2);
-            this.groupBox3.Controls.Add(this.textBox6);
-            this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Controls.Add(this.VmenuCheck);
+            this.groupBox3.Controls.Add(this.QbxCoreHelper);
             this.groupBox3.Controls.Add(this.fivemresname_tb);
             this.groupBox3.Controls.Add(this.label4);
             this.groupBox3.Location = new System.Drawing.Point(12, 252);
@@ -208,77 +200,44 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Resource";
             // 
-            // CombineCheck
+            // QbCoreHelper
             // 
-            this.CombineCheck.AutoSize = true;
-            this.CombineCheck.Location = new System.Drawing.Point(9, 148);
-            this.CombineCheck.Name = "CombineCheck";
-            this.CombineCheck.Size = new System.Drawing.Size(268, 20);
-            this.CombineCheck.TabIndex = 19;
-            this.CombineCheck.Text = "store converted vehicles in one resource";
-            this.CombineCheck.UseVisualStyleBackColor = true;
-            this.CombineCheck.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged_2);
+            this.QbCoreHelper.AutoSize = true;
+            this.QbCoreHelper.Location = new System.Drawing.Point(234, 74);
+            this.QbCoreHelper.Name = "QbCoreHelper";
+            this.QbCoreHelper.Size = new System.Drawing.Size(179, 20);
+            this.QbCoreHelper.TabIndex = 20;
+            this.QbCoreHelper.Text = "qb-core vehicle list helper";
+            this.QbCoreHelper.UseVisualStyleBackColor = true;
+            this.QbCoreHelper.CheckedChanged += new System.EventHandler(this.QbCoreHelper_CheckedChanged);
             // 
             // CompressCheck
             // 
             this.CompressCheck.AutoSize = true;
-            this.CompressCheck.Checked = true;
-            this.CompressCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CompressCheck.Location = new System.Drawing.Point(9, 122);
+            this.CompressCheck.Location = new System.Drawing.Point(12, 100);
             this.CompressCheck.Name = "CompressCheck";
-            this.CompressCheck.Size = new System.Drawing.Size(326, 20);
+            this.CompressCheck.Size = new System.Drawing.Size(325, 20);
             this.CompressCheck.TabIndex = 18;
             this.CompressCheck.Text = "compress/downsize textures (might reduce quality)";
             this.CompressCheck.UseVisualStyleBackColor = true;
             this.CompressCheck.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged_1);
             // 
-            // checkBox2
+            // QbxCoreHelper
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Enabled = false;
-            this.checkBox2.Location = new System.Drawing.Point(9, 70);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(267, 20);
-            this.checkBox2.TabIndex = 17;
-            this.checkBox2.Text = "change in-game name (COMING SOON)";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            // 
-            // textBox6
-            // 
-            this.textBox6.Enabled = false;
-            this.textBox6.Location = new System.Drawing.Point(264, 37);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(188, 22);
-            this.textBox6.TabIndex = 16;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(261, 18);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(188, 16);
-            this.label5.TabIndex = 15;
-            this.label5.Text = "Custom vehicle in-game name";
-            // 
-            // VmenuCheck
-            // 
-            this.VmenuCheck.AutoSize = true;
-            this.VmenuCheck.Checked = true;
-            this.VmenuCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.VmenuCheck.Enabled = false;
-            this.VmenuCheck.Location = new System.Drawing.Point(9, 96);
-            this.VmenuCheck.Name = "VmenuCheck";
-            this.VmenuCheck.Size = new System.Drawing.Size(373, 20);
-            this.VmenuCheck.TabIndex = 14;
-            this.VmenuCheck.Text = "vMenu / server.cfg helper (check directory after converting)\r\n";
-            this.VmenuCheck.UseVisualStyleBackColor = true;
-            this.VmenuCheck.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.QbxCoreHelper.AutoSize = true;
+            this.QbxCoreHelper.Location = new System.Drawing.Point(12, 74);
+            this.QbxCoreHelper.Name = "QbxCoreHelper";
+            this.QbxCoreHelper.Size = new System.Drawing.Size(188, 20);
+            this.QbxCoreHelper.TabIndex = 14;
+            this.QbxCoreHelper.Text = "qbx_core vehicle list helper";
+            this.QbxCoreHelper.UseVisualStyleBackColor = true;
+            this.QbxCoreHelper.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // fivemresname_tb
             // 
             this.fivemresname_tb.Location = new System.Drawing.Point(9, 37);
             this.fivemresname_tb.Name = "fivemresname_tb";
-            this.fivemresname_tb.Size = new System.Drawing.Size(249, 22);
+            this.fivemresname_tb.Size = new System.Drawing.Size(442, 22);
             this.fivemresname_tb.TabIndex = 13;
             this.fivemresname_tb.Text = "default";
             // 
@@ -287,18 +246,18 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(6, 18);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(144, 16);
+            this.label4.Size = new System.Drawing.Size(197, 16);
             this.label4.TabIndex = 12;
-            this.label4.Text = "FiveM Resource name";
+            this.label4.Text = "Subfolder Name In Stream/Data";
             // 
             // btnStart
             // 
             this.btnStart.Enabled = false;
             this.btnStart.Location = new System.Drawing.Point(12, 437);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(75, 23);
+            this.btnStart.Size = new System.Drawing.Size(200, 23);
             this.btnStart.TabIndex = 3;
-            this.btnStart.Text = "Start";
+            this.btnStart.Text = "Start Conversion Process";
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
@@ -351,23 +310,12 @@
             this.tsBar.Name = "tsBar";
             this.tsBar.Size = new System.Drawing.Size(100, 16);
             // 
-            // btnConvertFromFolder
-            // 
-            this.btnConvertFromFolder.Location = new System.Drawing.Point(93, 437);
-            this.btnConvertFromFolder.Name = "btnConvertFromFolder";
-            this.btnConvertFromFolder.Size = new System.Drawing.Size(146, 23);
-            this.btnConvertFromFolder.TabIndex = 20;
-            this.btnConvertFromFolder.Text = "Convert from folder";
-            this.btnConvertFromFolder.UseVisualStyleBackColor = true;
-            this.btnConvertFromFolder.Click += new System.EventHandler(this.button2_Click_1);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1083, 488);
-            this.Controls.Add(this.btnConvertFromFolder);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.groupBox3);
@@ -401,16 +349,12 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox log;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.CheckBox VmenuCheck;
+        private System.Windows.Forms.CheckBox QbxCoreHelper;
         private System.Windows.Forms.TextBox fivemresname_tb;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel tsStatus;
@@ -421,9 +365,9 @@
         private System.Windows.Forms.ToolStripProgressBar tsBar;
         private System.Windows.Forms.Button btnClearQueue;
         private System.Windows.Forms.ToolStripStatusLabel jobTime;
-        private System.Windows.Forms.Button btnConvertFromFolder;
         private System.Windows.Forms.CheckBox CompressCheck;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.CheckBox CombineCheck;
+        private System.Windows.Forms.CheckBox QbCoreHelper;
+        private System.Windows.Forms.Label label2;
     }
 }
