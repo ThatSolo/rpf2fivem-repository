@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net;
-using SharpCompress.Common;
-using SharpCompress.Archives;
-using SharpCompress.Archives.Rar;
-using SharpCompress.Archives.Zip;
-using SharpCompress.Archives.SevenZip;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using CodeWalker.GameFiles;
 using CodeWalker.Utils;
 using Sentry;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Rar;
+using SharpCompress.Archives.SevenZip;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 
 namespace rpf2fivem
 {
@@ -26,36 +25,57 @@ namespace rpf2fivem
     public partial class Main : Form
     {
 
-    // GLOBALS
+        // GLOBALS
 
-    int currentQueue = 1;
+        int currentQueue = 1;
         Random rnd = new Random();
-        bool vmenuhelper = true;
-        bool servercfghelper = true;
-        bool combiner = false;
         int convertFromFolder_resname;
-        static string latestModelName = "";
         string combinedFolderString = "";
+        string LatestStreamingName = "";
 
+        bool QbCoreHelperState = false;
+        bool QbxCoreHelperState = false;
+        bool CombineResourceState = true;
+
+
+        public struct VehicleData
+        { 
+            public string InternalReference { get; set; }
+            public string Name { get; set; }
+            public string Brand { get; set; }
+            public string Model { get; set; }
+            public int Price { get; set; }
+            public string Category { get; set; }
+            public string Type { get; set; }
+            public string Hash { get; set; }
+        }
+
+        public struct StructureFolders
+        {
+            public string streamFolder;
+            public string dataFolder;
+        }
+
+        static List<VehicleData> vehicleArray = new List<VehicleData>();
+        static Dictionary<string, string> modelNames = new Dictionary<string, string>();
         static Dictionary<string, string[]> extensions = new Dictionary<string, string[]>()
         {
             { "meta",  new string[]{ ".meta", "clip_sets.xml" } },
             { "stream", new string[]{".ytd", ".yft", ".ydr" } }
         };
 
-        static Dictionary<string, string> modelNames = new Dictionary<string, string>();
-
-        struct StructureFolders
-        {
-            public string streamFolder;
-            public string dataFolder;
-        }
-
         public Main()
         {
-            if (!Directory.Exists("./logs"))
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+            // Validate if a log exists, if not, create one!
+            if (!Directory.Exists(@"./logs"))
             {
-                Directory.CreateDirectory("logs");
+                Directory.CreateDirectory(@"logs");
             }
             if (!File.Exists(@"./logs/latest.log"))
             {
@@ -63,11 +83,6 @@ namespace rpf2fivem
                 fs.Close();
             }
 
-            InitializeComponent();
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
             this.ActiveControl = label1; // prevent random textbox focus
             fivemresname_tb.Text = rnd.Next(2147483647).ToString();
 
@@ -84,6 +99,7 @@ namespace rpf2fivem
             LogAppend("Links must be DIRECT link else they won't download!");
             LogAppend("");
 
+            // Validate if NConvert exists in the directory
             if (!Directory.Exists("./NConvert"))
             {
                 // add warning if the user hasn't installed NConvert properly
@@ -145,13 +161,6 @@ namespace rpf2fivem
             tsQueue.Text = "Queue: " + current + "/" + total;
         }
 
-        private void ShellCmd(string cmd)
-        {
-            string strCmdText = "/K " + cmd;
-            System.Diagnostics.Process.Start("CMD.exe", strCmdText);
-        }
-
-
         async Task AsyncFileDownload(string url)
         {
             string file = System.IO.Path.GetFileName(url);
@@ -168,30 +177,6 @@ namespace rpf2fivem
             startInfo.Arguments = "/C " + cmd;
             process.StartInfo = startInfo;
             process.Start();
-        }
-
-        // Helper Functions
-        private void VmenuHelper(string ytdcarname)
-        {
-            if (vmenuhelper && servercfghelper)
-            {
-                using (StreamWriter w = File.AppendText("vmenu.txt"))
-                {
-                    w.WriteLine("        " + '"' + ytdcarname + '"' + ",");
-                }
-            }
-
-        }
-
-        private void CfgHelper(string servercfg)
-        {
-            if (vmenuhelper && servercfghelper)
-            {
-                using (StreamWriter w = File.AppendText("servercfg.txt"))
-                {
-                    w.WriteLine("ensure " + servercfg);
-                }
-            }
         }
 
         // SharpCompress Functions
@@ -227,7 +212,6 @@ namespace rpf2fivem
 
         private void unSeven(string target)
         {
-
             using (var archive = SevenZipArchive.Open(target))
             {
                 foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
@@ -278,35 +262,22 @@ namespace rpf2fivem
         // Unpacking Functions
         private void RpfUnpack(string resname, string rpfFile)
         {
-            if (rpfFile == "")
+            string rpfExtension = "*.rpf";
+            string[] rpfFiles = Directory.GetFiles("cache", rpfExtension, SearchOption.AllDirectories);
+            foreach (var item in rpfFiles)
             {
-                string rpfExtension = "*.rpf";
-                string[] rpfFiles = Directory.GetFiles("cache", rpfExtension, SearchOption.AllDirectories);
-                foreach (var item in rpfFiles)
-                {
-                    RpfFile rpf = new RpfFile(item, item);
-                    LogAppend("[CodeWalker] Unpacking " + item + "...");
-
-                    if (rpf.ScanStructure(null, null))
-                    {
-                        ExtractFilesInRPF(rpf, @".\cache\rpfunpack\");
-                    }
-                }
-
-                if (rpfFiles.Length == 0)
-                {
-                    WarningAppend("[CodeWalker] Vehicle (" + resname + ") is incompatible, no .rpf file was found.");
-                }
-            }
-            else
-            {
-                RpfFile rpf = new RpfFile(rpfFile, rpfFile);
-                LogAppend("[CodeWalker] Unpacking " + rpfFile + "...");
+                RpfFile rpf = new RpfFile(item, item);
+                LogAppend("[CodeWalker] Unpacking " + item + "...");
 
                 if (rpf.ScanStructure(null, null))
                 {
                     ExtractFilesInRPF(rpf, @".\cache\rpfunpack\");
                 }
+            }
+
+            if (rpfFiles.Length == 0)
+            {
+                WarningAppend("[CodeWalker] Vehicle (" + resname + ") is incompatible, no .rpf file was found.");
             }
         }
 
@@ -401,7 +372,7 @@ namespace rpf2fivem
 
                                                             //p.WaitForExit();
 
-                                                            LogAppend("[NConvert] " + p.StandardOutput.ReadToEnd());
+                                                            //LogAppend("[NConvert] " + p.StandardOutput.ReadToEnd());
 
                                                             LogAppend("[NConvert] Sucessfully resized texture (" + texture.Value.Name + ") to 50%!");
                                                             File.Move("./NConvert/" + texture.Value.Name + ".dds", directoryOffset + texture.Value.Name + ".dds");
@@ -451,7 +422,8 @@ namespace rpf2fivem
 
                                 if (entry.NameLower.EndsWith(".ytd"))
                                 {
-                                    latestModelName = entry.NameLower.Remove(entry.NameLower.Length - 4);
+                                    LatestStreamingName = entry.NameLower.Remove(entry.NameLower.Length - 4);
+                                    LogAppend("[CodeWalker] Located streaming hash name in archive, (ytd) " + LatestStreamingName + ".");
                                 }
                             }
                         }
@@ -472,7 +444,88 @@ namespace rpf2fivem
                     }
                 }
             }
+        }
 
+        // Configuration Helper Scripts
+        private VehicleData? FindVehicleByInternalReference(string InternalReference)
+        {
+            return vehicleArray.FirstOrDefault(vehicle => vehicle.InternalReference == InternalReference);
+        }
+
+        private void InvokeHelperScripts(string StreamingModelName, string InternalReference)
+        {
+            if (QbxCoreHelperState || QbCoreHelperState)
+            {
+                try
+                {
+                    string qbxCoreFilePath = "qbxcore_vehicles.txt";
+                    string qbCoreFilePath = "qbcore_vehicles.txt";
+                    var vehicleData = FindVehicleByInternalReference(InternalReference);
+
+                    if (vehicleData.Value.Name == null)
+                    {
+                        WarningAppend($"[HelperScripts] No vehicle data found for InternalMemoryReference: {InternalReference}");
+                        WarningAppend($"[HelperScripts] Did you forget to enable the helpers before you created the queue?");
+                        return;
+                    }
+
+                    if (QbxCoreHelperState)
+                    {
+                        using (StreamWriter writer = new StreamWriter(qbxCoreFilePath, append: true))
+                        {
+                            writer.WriteLine($"{StreamingModelName} = {{");
+                            writer.WriteLine($"    name = '{vehicleData.Value.Name}',");
+                            writer.WriteLine($"    brand = '{vehicleData.Value.Brand}',");
+                            writer.WriteLine($"    model = '{StreamingModelName}',");
+                            writer.WriteLine($"    price = {vehicleData.Value.Price},");
+                            writer.WriteLine($"    category = '{vehicleData.Value.Category}',");
+                            writer.WriteLine($"    type = '{vehicleData.Value.Type}',");
+                            writer.WriteLine($"    hash = '{StreamingModelName}',");
+                            writer.WriteLine("},");
+                        }
+                        LogAppend("[HelperScripts] qbxcore_vehicles.txt file updated successfully.");
+                    }
+
+                    if (QbCoreHelperState)
+                    {
+                        using (StreamWriter writer = new StreamWriter(qbCoreFilePath, append: true))
+                        {
+                            writer.WriteLine($"{{ model = '{StreamingModelName}', name = '{vehicleData.Value.Name}', brand = '{vehicleData.Value.Brand}', price = {vehicleData.Value.Price}, category = '{vehicleData.Value.Category}', type = '{vehicleData.Value.Type}', shop = 'none' }},");
+                        }
+                        LogAppend("[HelperScripts] qbcore_vehicles.txt file updated successfully.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorAppend($"[HelperScripts] Failed to generate helper files. Error: {ex.Message}");
+                }
+            }
+        }
+
+        public VehicleData InvokeHelperQuestionnaire()
+        {
+            HelperWindow helperForm = new HelperWindow();
+            helperForm.ShowDialog();
+
+            if (helperForm.InputFinishedFlag)
+            {
+                var data = new VehicleData
+                {
+                    Name = helperForm.VehicleName,
+                    Brand = helperForm.VehicleBrand,
+                    Model = "",
+                    Price = int.Parse(helperForm.VehiclePrice),
+                    Category = helperForm.VehicleCategory,
+                    Type = helperForm.VehicleType,
+                    Hash = ""
+                };
+
+                LogAppend($"[HelperScripts] Finished configuration helper for vehicle: {helperForm.VehicleName}");
+
+                return data;
+            }
+
+            return default; // Return default value if InputFinishedFlag is false
         }
 
         // Cleanup Functions
@@ -499,7 +552,6 @@ namespace rpf2fivem
                 {
                     fixTextureFile(item);
                     File.Move(item, Path.Combine(streamFolder, Path.GetFileName(item))); // put into stream folder inside resource name
-                    VmenuHelper(Path.GetFileName(item));
 
                 }
                 else if (isYtf)
@@ -565,7 +617,6 @@ namespace rpf2fivem
 
         private void SetupStructureFolders(string folderName, string combinedFolderName, bool combinedEnv)
         {
-
             Encoding utf8WithoutBom = new UTF8Encoding(false);
             string directory = "";
             string fxmanifest = "";
@@ -643,203 +694,98 @@ namespace rpf2fivem
 
             LogAppend("[Worker] Start conversion process...");
 
-            if (folder == false)
+            tsBar.Maximum = queueList.Items.Count;
+            tsBar.Value = 0;
+
+            combinedFolderString = rnd.Next(2147483647).ToString();
+            Directory.CreateDirectory(@"./combinercache");
+
+            foreach (string CurrentItem in queueList.Items)
             {
 
-                tsBar.Maximum = queueList.Items.Count;
-                tsBar.Value = 0;
-
-                if (combiner == true)
-                {
-                    combinedFolderString = rnd.Next(2147483647).ToString();
-                    Directory.CreateDirectory(@"./combinercache");
-                }
-
-                foreach (string CurrentItem in queueList.Items)
-                {
-
-                    var Transaction = SentrySdk.StartTransaction(
-                        "resourceconversion",
-                        "resourceconversion-start"
-                    );
-
-                    var span1 = Transaction.StartChild("resourceconversion-setupenviroment");
-
-                    LogAppend("[Worker] Setting up basic enviroment...");
-                    SetupBasicEnviroment();
-
-                    QueueHandler(currentQueue, queueList.Items.Count);
-                    tsBar.Value++;
-
-                    string filteredresname = "";
-                    string SingleEnviromentFolder = regex.Match(CurrentItem).Groups[1].Value;
-                    string CombinedEnviromentFolder = combinedFolderString;
-
-                    string StreamFolder = "";
-                    string DataFolder = "";
-                    var StopwatchTimer = Stopwatch.StartNew();
-
-                    span1.Finish();
-                    var span2 = Transaction.StartChild("resourceconversion-setupstructure");
-
-                    LogAppend("[Worker] Setting up resource folder structure...");
-                    SetupStructureFolders(SingleEnviromentFolder, CombinedEnviromentFolder, combiner);
-
-                    span2.Finish();
-                    var span3 = Transaction.StartChild("resourceconversion-fetchfolders");
-
-                    LogAppend("[Worker] Fetching resource stream and data folders...");
-                    var StructureFolders = CreateDataFolders(SingleEnviromentFolder, CombinedEnviromentFolder, combiner);
-                    StreamFolder = StructureFolders.streamFolder;
-                    DataFolder = StructureFolders.dataFolder;
-
-                    span3.Finish();
-                    var span4 = Transaction.StartChild("resourceconversion-downloadarchive");
-
-                    LogAppend("[Worker] Downloading archive...");
-                    if (CurrentItem != "")
-                    {
-                        await AsyncFileDownload(CurrentItem.Replace($"<{SingleEnviromentFolder}>", ""));
-                    }
-
-                    span4.Finish();
-                    var span5 = Transaction.StartChild("resourceconversion-movearchive");
-
-                    LogAppend("[Worker] Moving archives to cache...");
-                    HideShellCmd(@"move *.rar cache");
-                    HideShellCmd(@"move *.zip cache");
-                    HideShellCmd(@"move *.7z cache");
-
-                    span5.Finish();
-                    var span6 = Transaction.StartChild("resourceconversion-decompressarchive");
-
-                    LogAppend("[SharpCompress] Decompressing...");
-                    await Task.Delay(500);
-                    universalCacheUnpack();
-                    await Task.Delay(2500);
-
-                    span6.Finish();
-                    var span7 = Transaction.StartChild("resourceconversion-removeunnessecary");
-
-                    LogAppend("[Worker] Removing leftover files from the archive..."); // these functions are deleting the files from the previous combined conversion aswell, I need to figure out a filter for that perhaps
-                    RemoveUnnessecary("yft");
-                    RemoveUnnessecary("ytd");
-                    RemoveUnnessecary("meta");
-
-                    span7.Finish();
-                    var span8 = Transaction.StartChild("resourceconversion-unpackrpf");
-
-                    LogAppend("[CodeWalker] Searching for dlc.rpf...");
-                    try
-                    {
-                        RpfUnpack(filteredresname, "");
-
-                        span8.Finish();
-                        var span9 = Transaction.StartChild("resourceconversion-inflateresourcefolder");
-
-                        LogAppend("[Worker] Moving items from cache to resource folder."); // Clean cache from unused files, such as fragments and texture dictionaries.
-                        await Task.Delay(5000);
-                        InflateResourceFolder(StreamFolder, DataFolder, "meta", false, false, false);
-                        InflateResourceFolder(StreamFolder, DataFolder, "yft", false, true, false);
-                        InflateResourceFolder(StreamFolder, DataFolder, "ytd", true, false, false);
-
-                        span9.Finish();
-                        var span10 = Transaction.StartChild("resourceconversion-moveresourcefolder");
-
-                        LogAppend("[Worker] Moving resource folder to /resources...");
-                        if (combiner == true)
-                        {
-                            //Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
-
-                            if (tsBar.Value == queueList.Items.Count)
-                            {
-                                LogAppend("[Worker] Moving resource folder to /resources as all conversions are finished.");
-                                Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
-                                Directory.Delete(@"./combinercache");
-                            }
-                            else
-                            {
-                                LogAppend("[Worker] Moving resource folder to Combiner Cache as the unpacking is not finished yet.");
-                                Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./combinercache/" + CombinedEnviromentFolder);
-                            }
-
-                        }
-                        else
-                        {
-                            Directory.Move(@"./cache/structure/" + SingleEnviromentFolder, @"./resources/" + SingleEnviromentFolder);
-                            CfgHelper(SingleEnviromentFolder);
-                        }
-
-                        LogAppend("[Worker] Conversion of vehicle " + SingleEnviromentFolder ?? CombinedEnviromentFolder + " has finished, cleaning up..."); // forgot that C# actually has null coalescing operators
-                        span10.Finish();
-                    }
-                    catch (Exception ex)
-                    {
-                        SentrySdk.CaptureException(ex);
-                        ErrorAppend("[CodeWalker] Failed to extract dlc.rpf, stack trace: " + ex);
-                    }
-
-                    currentQueue += 1;
-                    cleanUp();
-                    StopwatchTimer.Stop();
-                    jobTime.Text = "| Last job took: " + StopwatchTimer.ElapsedMilliseconds + " ms";
-                    Transaction.Finish();
-                }
-            }
-            else
-            {
+                // Handle basic environment setup for running the conversion
+                LogAppend("[Worker] Setting up basic enviroment...");
+                SetupBasicEnviroment();
                 QueueHandler(currentQueue, queueList.Items.Count);
                 tsBar.Value++;
 
                 string filteredresname = "";
-                string SingleEnviromentFolder = rnd.Next(2147483647).ToString();
+                string SingleEnviromentFolder = regex.Match(CurrentItem).Groups[1].Value;
+                string CombinedEnviromentFolder = combinedFolderString;
 
                 string StreamFolder = "";
                 string DataFolder = "";
                 var StopwatchTimer = Stopwatch.StartNew();
 
-                LogAppend("[Worker] Setting up basic enviroment...");
-                SetupBasicEnviroment();
-
-                LogAppend("[Worker] Moving selected archive to cache...");
-                //File.Move(resource, @"./cache/" + saferesource);
-                HideShellCmd("move \"" + resource + "\" cache");
-
+                // Setup the resource folder structure
                 LogAppend("[Worker] Setting up resource folder structure...");
-                SetupStructureFolders(SingleEnviromentFolder, "", false);
+                SetupStructureFolders(SingleEnviromentFolder, CombinedEnviromentFolder, CombineResourceState);
 
+                // Handle stream and data folders for the conversion
                 LogAppend("[Worker] Fetching resource stream and data folders...");
-                var StructureFolders = CreateDataFolders(SingleEnviromentFolder, "", false);
-                StreamFolder = StructureFolders.streamFolder;
-                DataFolder = StructureFolders.dataFolder;
+                var StructureFolders = CreateDataFolders(SingleEnviromentFolder, CombinedEnviromentFolder, CombineResourceState);
+                    StreamFolder = StructureFolders.streamFolder;
+                    DataFolder = StructureFolders.dataFolder;
 
+                // Download the resource archive
+                LogAppend("[Worker] Downloading archive...");
+                if (CurrentItem != "")
+                {
+                    await AsyncFileDownload(CurrentItem.Replace($"<{SingleEnviromentFolder}>", ""));
+                }
+
+                // Move the downloaded archive to the cache folder
+                LogAppend("[Worker] Moving archives to cache...");
+                HideShellCmd(@"move *.rar cache");
+                HideShellCmd(@"move *.zip cache");
+                HideShellCmd(@"move *.7z cache");
+
+                // Unpack the archive
                 LogAppend("[SharpCompress] Decompressing...");
                 await Task.Delay(500);
                 universalCacheUnpack();
                 await Task.Delay(2500);
 
-                LogAppend("[Worker] Removing leftover files from the archive...");
+                // Cleanup function invokation
+                LogAppend("[Worker] Removing leftover files from the archive..."); // these functions are deleting the files from the previous combined conversion aswell, I need to figure out a filter for that perhaps
                 RemoveUnnessecary("yft");
                 RemoveUnnessecary("ytd");
                 RemoveUnnessecary("meta");
 
+                // Handle/invoke CodeWalker execution of dlc.rpf unpacking
                 LogAppend("[CodeWalker] Searching for dlc.rpf...");
                 try
                 {
                     RpfUnpack(filteredresname, "");
 
+                    // Inflating resource folders with data from Rpf archive
                     LogAppend("[Worker] Moving items from cache to resource folder."); // Clean cache from unused files, such as fragments and texture dictionaries.
                     await Task.Delay(5000);
                     InflateResourceFolder(StreamFolder, DataFolder, "meta", false, false, false);
                     InflateResourceFolder(StreamFolder, DataFolder, "yft", false, true, false);
                     InflateResourceFolder(StreamFolder, DataFolder, "ytd", true, false, false);
 
-                    LogAppend("[Worker] Moving converted resource into /resources folder.");
-                    Directory.Move(@"./cache/structure/" + SingleEnviromentFolder, @"./resources/" + SingleEnviromentFolder);
+                    // Moving cached files or complete resource
+                    LogAppend("[Worker] Moving resource folder to /resources...");
+                    if (tsBar.Value == queueList.Items.Count) 
+                    {
+                        LogAppend("[Worker] Moving resource folder to /resources as all conversions are finished.");
+                        Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./resources/" + CombinedEnviromentFolder);
+                        Directory.Delete(@"./combinercache");
+                    } 
+                    else 
+                    {
+                        LogAppend("[Worker] Moving resource folder to Combiner Cache as the unpacking is not finished yet.");
+                        Directory.Move(@"./cache/structure/" + CombinedEnviromentFolder, @"./combinercache/" + CombinedEnviromentFolder);
+                    }
 
-                    CfgHelper(SingleEnviromentFolder);
+                    // Handling helper functions
+                    if (QbxCoreHelperState || QbCoreHelperState)
+                    {
+                        InvokeHelperScripts(LatestStreamingName, SingleEnviromentFolder);
+                    }
 
-                    LogAppend("[Worker] Conversion of vehicle " + SingleEnviromentFolder + " has finished, cleaning up...");
+                    LogAppend("[Worker] Conversion of vehicle " + SingleEnviromentFolder ?? CombinedEnviromentFolder + " has finished, cleaning up..."); // forgot that C# actually has null coalescing operators
                 }
                 catch (Exception ex)
                 {
@@ -855,34 +801,6 @@ namespace rpf2fivem
         }
 
         // Events
-
-        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
-        {
-            if (CompressCheck.Checked == true)
-            {
-                LogAppend("[InputHandler] Enabled texture compression/downsizing.");
-            }
-            else
-            {
-                LogAppend("[InputHandler] Disabled texture compression/downsizing.");
-            }
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (VmenuCheck.Checked == true)
-            {
-                servercfghelper = true;
-                vmenuhelper = true;
-                LogAppend("[InputHandler] Config Helpers switched on");
-            }
-            else
-            {
-                servercfghelper = false;
-                vmenuhelper = false;
-                LogAppend("[InputHandler] Config Helpers switched off");
-            }
-        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -917,14 +835,6 @@ namespace rpf2fivem
             btnStart.Enabled = false;
         }
 
-        private void button5_Click(object sender, EventArgs e)
-        {
-            for (int i = 1; i <= 3; i++)
-            {
-                queueList.Items.Add("https://files.gta5-mods.com/uploads/1998-audi-s8-d2-us-6spd-add-on-replace-tuning-extras/15b8b3-1998%20Audi%20S8%20(D2)%20-%20v1.1.zip");
-            }
-        }
-
         private async void btnStart_Click(object sender, EventArgs e)
         {
             await startConversion(false, "", "");
@@ -932,8 +842,27 @@ namespace rpf2fivem
 
         private void btnAddQueue_Click(object sender, EventArgs e)
         {
-            LogAppend("Job added!");
-            queueList.Items.Add($"<{fivemresname_tb.Text}>" + textBox1.Text);
+            LogAppend("[InputHandler] Adding specificed job to the queue...");
+
+            // Check for the helper states and if so, invoke the helper questionnaire
+            if (QbxCoreHelperState || QbCoreHelperState)
+            {
+                var VehicleDataObject = InvokeHelperQuestionnaire();
+                vehicleArray.Add(new VehicleData
+                {
+                    InternalReference = fivemresname_tb.Text,
+                    Name = VehicleDataObject.Name,
+                    Brand = VehicleDataObject.Brand,
+                    Model = VehicleDataObject.Model,
+                    Price = VehicleDataObject.Price,
+                    Category = VehicleDataObject.Category,
+                    Type = VehicleDataObject.Type,
+                    Hash = VehicleDataObject.Hash
+                });
+            }
+
+            // Run the standard function
+            queueList.Items.Add($"<{fivemresname_tb.Text}> " + textBox1.Text);
             btnStart.Enabled = true;
             QueueHandler(0, queueList.Items.Count);
             textBox1.Clear();
@@ -960,29 +889,47 @@ namespace rpf2fivem
             }
         }
 
-        private void reslua_TextChanged(object sender, EventArgs e)
+        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
         {
-
-        }
-
-        private void checkBox1_CheckedChanged_2(object sender, EventArgs e)
-        {
-            if (CombineCheck.Checked == true)
+            if (CompressCheck.Checked == true)
             {
-                combiner = true;
-                LogAppend("[InputHandler] Combine Helpers switched on");
+                LogAppend("[InputHandler] Enabled texture compression/downsizing.");
             }
             else
             {
-                combiner = false;
-                LogAppend("[InputHandler] Combine Helpers switched off");
+                LogAppend("[InputHandler] Disabled texture compression/downsizing.");
             }
         }
 
-        private void label7_Click(object sender, EventArgs e)
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (QbxCoreHelper.Checked == true)
+            {
+                QbxCoreHelperState = true;
+                LogAppend("[HelperScripts] Enabled vehicles list helper for qbx_core");
+            }
+            else
+            {
+                QbxCoreHelperState = false;
+                LogAppend("[HelperScripts] Disabled vehicles list helper for qbx_core");
+            }
         }
+
+        private void QbCoreHelper_CheckedChanged(object sender, EventArgs e)
+        {
+            if (QbCoreHelper.Checked == true)
+            {
+                QbCoreHelperState = true;
+                LogAppend("[HelperScripts] Enabled vehicles list helper for qb-core");
+            }
+            else
+            {
+                QbCoreHelperState = false;
+                LogAppend("[HelperScripts] Disabled vehicles list helper for qb-core");
+            }
+        }
+
     }
+
 }
 
