@@ -6,7 +6,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,6 +21,7 @@ using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace rpf2fivem
 {
@@ -32,6 +36,10 @@ namespace rpf2fivem
         int convertFromFolder_resname;
         string combinedFolderString = "";
         string LatestStreamingName = "";
+
+        string CurrentBuildName = "helper-scripts@4.1.0-patch1";
+        string LatestBuildName = "";
+        bool ApplicationSafeShutdown = false;
 
         bool QbCoreHelperState = false;
         bool QbxCoreHelperState = false;
@@ -66,7 +74,38 @@ namespace rpf2fivem
 
         public Main()
         {
+
+            var task = GetLatestReleaseName("OWNER", "REPO");
+            task.Wait(); // since Main can't be async in 7.3
+
+            LatestBuildName = task.Result;
+
             InitializeComponent();
+        }
+
+        static Task<string> GetLatestReleaseName(string owner, string repo)
+        {
+            return Task.Run(async () =>
+            {
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("CSharpApp", "1.0"));
+
+                string url = $"https://api.github.com/repos/Avenze/rpf2fivem-repository/releases/latest";
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                string jsonString = await response.Content.ReadAsStringAsync();
+
+                using (JsonDocument doc = JsonDocument.Parse(jsonString))
+                {
+                    JsonElement root = doc.RootElement;
+                    if (root.TryGetProperty("name", out JsonElement nameProp))
+                    {
+                        return nameProp.GetString();
+                    }
+                    return "No name found";
+                }
+            });
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -83,6 +122,25 @@ namespace rpf2fivem
                 fs.Close();
             }
 
+            // Version checking
+            if (LatestBuildName != CurrentBuildName)
+            {
+                WarningAppend("[Application Update] A new version of rpf2fivem is available, please update to the latest version!");
+                WarningAppend("[Application Update] Current version: " + CurrentBuildName);
+                WarningAppend("[Application Update] Latest version: " + LatestBuildName);
+
+                QbxCoreHelper.Enabled = false;
+                QbCoreHelper.Enabled = false;
+                fivemresname_tb.Enabled = false;
+                textBox1.Enabled = false;
+                CompressCheck.Enabled = false;
+                btnClearQueue.Enabled = false;
+
+                ApplicationSafeShutdown = true;
+                return;
+            }
+
+            // Minor setup
             this.ActiveControl = label1; // prevent random textbox focus
             fivemresname_tb.Text = rnd.Next(2147483647).ToString();
 
@@ -873,7 +931,7 @@ namespace rpf2fivem
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if (textBox1.Text.Contains("https://files.gta5-mods.com/") && !textBox1.Text.Contains("XXXCARNAMEXXXX"))
+            if (textBox1.Text.Contains("https://files.gta5-mods.com/") && !textBox1.Text.Contains("XXXCARNAMEXXXX") && ApplicationSafeShutdown != false)
             {
                 gta5mods_status.ForeColor = Color.Green;
                 gta5mods_status.Text = "OK";
