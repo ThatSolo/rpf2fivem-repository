@@ -171,11 +171,11 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Enabled = false;
-            this.label2.Location = new System.Drawing.Point(160, -3);
+            this.label2.Location = new System.Drawing.Point(116, -3);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(435, 16);
+            this.label2.Size = new System.Drawing.Size(479, 16);
             this.label2.TabIndex = 14;
-            this.label2.Text = "build rpf2fivem@helper-scripts_4.0.0 | developed by: github.com/Avenze";
+            this.label2.Text = "build rpf2fivem@helper-scripts_4.1.0-patch1 | developed by: github.com/Avenze";
             // 
             // log
             // 
