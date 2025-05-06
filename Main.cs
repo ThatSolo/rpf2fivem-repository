@@ -480,8 +480,11 @@ namespace rpf2fivem
 
                                 if (entry.NameLower.EndsWith(".ytd"))
                                 {
-                                    LatestStreamingName = entry.NameLower.Remove(entry.NameLower.Length - 4);
-                                    LogAppend("[CodeWalker] Located streaming hash name in archive, (ytd) " + LatestStreamingName + ".");
+                                    if (!entry.NameLower.EndsWith("+hi", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        LatestStreamingName = entry.NameLower.Remove(entry.NameLower.Length - 4);
+                                        LogAppend("[CodeWalker] Located streaming hash name in archive, (ytd) " + LatestStreamingName + ".");
+                                    }
                                 }
                             }
                         }
@@ -510,6 +513,29 @@ namespace rpf2fivem
             return vehicleArray.FirstOrDefault(vehicle => vehicle.InternalReference == InternalReference);
         }
 
+        private void UpdateVehicleData(string InternalReference, string StreamingHash)
+        {
+            // Find the index of the VehicleData in the vehicleArray  
+            int index = vehicleArray.FindIndex(vehicle => vehicle.InternalReference == InternalReference);
+
+            if (index != -1)
+            {
+                // Update the model and hash of the VehicleData  
+                var updatedVehicle = vehicleArray[index];
+                updatedVehicle.Model = StreamingHash;
+                updatedVehicle.Hash = StreamingHash;
+
+                // Replace the VehicleData in the vehicleArray  
+                vehicleArray[index] = updatedVehicle;
+
+                LogAppend($"[HelperScripts] Updated VehicleData for InternalReference: {InternalReference} with StreamingHash: {StreamingHash}");
+            }
+            else
+            {
+                WarningAppend($"[HelperScripts] No VehicleData found for InternalReference: {InternalReference}");
+            }
+        }
+
         private void InvokeHelperScripts(string StreamingModelName, string InternalReference)
         {
             if (QbxCoreHelperState || QbCoreHelperState)
@@ -519,6 +545,7 @@ namespace rpf2fivem
                     string qbxCoreFilePath = "qbxcore_vehicles.txt";
                     string qbCoreFilePath = "qbcore_vehicles.txt";
                     var vehicleData = FindVehicleByInternalReference(InternalReference);
+                    UpdateVehicleData(InternalReference, StreamingModelName);
 
                     if (vehicleData.Value.Name == null)
                     {
@@ -843,7 +870,7 @@ namespace rpf2fivem
                         InvokeHelperScripts(LatestStreamingName, SingleEnviromentFolder);
                     }
 
-                    LogAppend("[Worker] Conversion of vehicle " + SingleEnviromentFolder ?? CombinedEnviromentFolder + " has finished, cleaning up..."); // forgot that C# actually has null coalescing operators
+                    LogAppend("[Worker] Conversion of vehicle " + LatestStreamingName + " has finished, cleaning up..."); // forgot that C# actually has null coalescing operators
                 }
                 catch (Exception ex)
                 {
@@ -890,6 +917,7 @@ namespace rpf2fivem
         private void button4_Click(object sender, EventArgs e)
         {
             queueList.Items.Clear();
+            vehicleArray.Clear();
             btnStart.Enabled = false;
         }
 
@@ -921,17 +949,19 @@ namespace rpf2fivem
 
             // Run the standard function
             queueList.Items.Add($"<{fivemresname_tb.Text}> " + textBox1.Text);
-            btnStart.Enabled = true;
-            QueueHandler(0, queueList.Items.Count);
-            textBox1.Clear();
-            this.ActiveControl = label1;
             fivemresname_tb.Text = rnd.Next(2147483647).ToString();
+            QueueHandler(0, queueList.Items.Count);
+
+            textBox1.Clear();
             textBox1.Text = "https://files.gta5-mods.com/uploads/XXXCARNAMEXXXX/XXXCARNAMEXXXX.zip";
+
+            this.ActiveControl = label1;
+            btnStart.Enabled = queueList.Items.Count > 0;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if (textBox1.Text.Contains("https://files.gta5-mods.com/") && !textBox1.Text.Contains("XXXCARNAMEXXXX") && ApplicationSafeShutdown != false)
+            if (textBox1.Text.Contains("https://files.gta5-mods.com/") && !textBox1.Text.Contains("XXXCARNAMEXXXX") && ApplicationSafeShutdown == false)
             {
                 gta5mods_status.ForeColor = Color.Green;
                 gta5mods_status.Text = "OK";
@@ -987,7 +1017,145 @@ namespace rpf2fivem
             }
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Check and recreate SaveQueueList.dat  
+                if (File.Exists("SaveQueueList.dat"))
+                {
+                    File.Delete("SaveQueueList.dat");
+                    LogAppend("[SaveState] Recreating SaveQueueList.dat data file for storage...");
+                }
+                using (File.Create("SaveQueueList.dat")) { }
+
+                // Check and recreate SaveVehicleArray.dat  
+                if (File.Exists("SaveVehicleArray.dat"))
+                {
+                    File.Delete("SaveVehicleArray.dat");
+                    LogAppend("[SaveState] Recreating SaveVehicleArray.dat data file for storage...");
+                }
+                using (File.Create("SaveVehicleArray.dat")) { }
+
+                LogAppend("[SaveState] Successfully recreated empty state files.");
+            }
+            catch (Exception ex)
+            {
+                ErrorAppend($"[SaveState] Failed to recreate state files. Error: {ex.Message}");
+            }
+
+            try
+            {
+                // Save queueList to SaveQueueList.dat
+                using (StreamWriter writer = new StreamWriter("SaveQueueList.dat"))
+                {
+                    foreach (var item in queueList.Items)
+                    {
+                        writer.WriteLine(item.ToString());
+                    }
+                }
+                LogAppend("[SaveState] Successfully saved queueList to SaveQueueList.dat.");
+
+                // Save vehicleArray to SaveVehicleArray.dat
+                using (StreamWriter writer = new StreamWriter("SaveVehicleArray.dat"))
+                {
+                    foreach (var vehicle in vehicleArray)
+                    {
+                        if (vehicle.Model == null || vehicle.Model == "")
+                        {
+                            writer.WriteLine($"{vehicle.InternalReference}|{vehicle.Name}|{vehicle.Brand}|NOMODEL|{vehicle.Price}|{vehicle.Category}|{vehicle.Type}|NOMODEL");
+                        }
+                        else
+                        {
+                            writer.WriteLine($"{vehicle.InternalReference}|{vehicle.Name}|{vehicle.Brand}|{vehicle.Model}|{vehicle.Price}|{vehicle.Category}|{vehicle.Type}|{vehicle.Hash}");
+                        }
+                    }
+                }
+                LogAppend("[SaveState] Successfully saved vehicleArray to SaveVehicleArray.dat.");
+            }
+            catch (Exception ex)
+            {
+                ErrorAppend($"[SaveState] Failed to save current state. Error: {ex.Message}");
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Clear the queueList before loading anything
+                queueList.Items.Clear();
+                QueueHandler(0, queueList.Items.Count);
+                btnStart.Enabled = false;
+
+                // Clear the vehicleArray collection
+                vehicleArray.Clear();
+
+                // Load queueList from SaveQueueList.dat
+                if (File.Exists("SaveQueueList.dat"))
+                {
+                    using (StreamReader reader = new StreamReader("SaveQueueList.dat"))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            queueList.Items.Add(line);
+                        }
+                    }
+                    LogAppend("[LoadState] Successfully loaded queueList from SaveQueueList.dat.");
+                }
+                else
+                {
+                    LogAppend("[LoadState] SaveQueueList.dat not found. Skipping queueList loading.");
+                }
+
+                // Load vehicleArray from SaveVehicleArray.dat
+                if (File.Exists("SaveVehicleArray.dat"))
+                {
+                    using (StreamReader reader = new StreamReader("SaveVehicleArray.dat"))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            var parts = line.Split('|');
+                            if (parts.Length == 8)
+                            {
+                                vehicleArray.Add(new VehicleData
+                                {
+                                    InternalReference = parts[0],
+                                    Name = parts[1],
+                                    Brand = parts[2],
+                                    Model = parts[3],
+                                    Price = int.Parse(parts[4]),
+                                    Category = parts[5],
+                                    Type = parts[6],
+                                    Hash = parts[7]
+                                });
+                            }
+                            else
+                            {
+                                WarningAppend("[LoadState] Malformed array line in SaveVehicleArray.dat, skipping.");
+                            }
+                        }
+                    }
+
+                    LogAppend("[LoadState] Successfully loaded vehicleArray from SaveVehicleArray.dat.");
+                }
+                else
+                {
+                    LogAppend("[LoadState] SaveVehicleArray.dat not found. Skipping vehicleArray loading.");
+                }
+
+                // Update the UI
+                btnStart.Enabled = queueList.Items.Count > 0;
+
+            }
+            catch (Exception ex)
+            {
+                ErrorAppend($"[LoadState] Failed to load saved state. Error: {ex.Message}");
+            }
+        }
+
     }
 
 }
-

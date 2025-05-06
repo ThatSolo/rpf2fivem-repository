@@ -56,6 +56,8 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsQueue = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -64,6 +66,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button2);
+            this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.textBox1);
             this.groupBox1.Controls.Add(this.btnClearQueue);
             this.groupBox1.Controls.Add(this.btnAddQueue);
@@ -310,6 +314,26 @@
             this.tsBar.Name = "tsBar";
             this.tsBar.Size = new System.Drawing.Size(100, 16);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(391, 68);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(60, 23);
+            this.button1.TabIndex = 21;
+            this.button1.Text = "Save";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(325, 68);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(60, 23);
+            this.button2.TabIndex = 22;
+            this.button2.Text = "Load";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -369,5 +393,7 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.CheckBox QbCoreHelper;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button1;
     }
 }
