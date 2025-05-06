@@ -37,7 +37,7 @@ namespace rpf2fivem
         string combinedFolderString = "";
         string LatestStreamingName = "";
 
-        string CurrentBuildName = "helper-scripts@4.1.0-patch1";
+        string CurrentBuildName = "helper-scripts@4.2.1-patch2";
         string LatestBuildName = "";
         bool ApplicationSafeShutdown = false;
 
@@ -135,6 +135,7 @@ namespace rpf2fivem
                 textBox1.Enabled = false;
                 CompressCheck.Enabled = false;
                 btnClearQueue.Enabled = false;
+                LoadEncryptionData.Enabled = false;
 
                 ApplicationSafeShutdown = true;
                 return;
@@ -189,6 +190,33 @@ namespace rpf2fivem
         {
             log.AppendText("[Error] An error occoured during execution, stacktrace has been logged to /logs/latest.log, please submit to GitHub Issues page.");
             LogFile("[ERROR] " + text);
+        }
+
+        public static class ProgramLogger
+        {
+            public static void LogAppend(string text)
+            {
+                if (Application.OpenForms["Main"] is Main mainForm)
+                {
+                    mainForm.Invoke((MethodInvoker)delegate
+                    {
+                        mainForm.log.AppendText(text + Environment.NewLine);
+                        mainForm.StatusHandler(text);
+                        mainForm.LogFile("[INFO] " + text);
+                    });
+                }
+            }
+            public static void ErrorAppend(string text)
+            {
+                if (Application.OpenForms["Main"] is Main mainForm)
+                {
+                    mainForm.Invoke((MethodInvoker)delegate
+                    {
+                        mainForm.log.AppendText("[ERROR] An error occoured during execution, stacktrace has been logged to /logs/latest.log, please submit to GitHub Issues page.");
+                        mainForm.LogFile("[ERROR] " + text);
+                    });
+                }
+            }
         }
 
         public void LogFile(string text)
@@ -377,6 +405,7 @@ namespace rpf2fivem
                             byte[] data = rpf.ExtractFileResource(resentry, br);
                             data = ResourceBuilder.Compress(data); //not completely ideal to recompress it...
                             data = ResourceBuilder.AddResourceHeader(resentry, data);
+
                             if (data == null)
                             {
                                 if (resentry.FileSize == 0)
@@ -418,8 +447,6 @@ namespace rpf2fivem
                                                             byte[] dds = DDSIO.GetDDSFile(texture.Value);
                                                             File.WriteAllBytes("./NConvert/" + texture.Value.Name + ".dds", dds);
 
-                                                            //HideShellCmd(@"./library/nconvert/nconvert.exe -out dds -resize 50% 50% -overwrite ./cache/images/" + texture.Value.Name + ".dds");
-
                                                             Process p = new Process();
                                                             p.StartInfo.FileName = @"./NConvert/nconvert.exe";
                                                             p.StartInfo.Arguments = $"-out dds -resize 50% 50% -overwrite ./NConvert/{texture.Value.Name}.dds";
@@ -427,10 +454,6 @@ namespace rpf2fivem
                                                             p.StartInfo.CreateNoWindow = true;
                                                             p.StartInfo.RedirectStandardOutput = true;
                                                             p.Start();
-
-                                                            //p.WaitForExit();
-
-                                                            //LogAppend("[NConvert] " + p.StandardOutput.ReadToEnd());
 
                                                             LogAppend("[NConvert] Sucessfully resized texture (" + texture.Value.Name + ") to 50%!");
                                                             File.Move("./NConvert/" + texture.Value.Name + ".dds", directoryOffset + texture.Value.Name + ".dds");
@@ -451,8 +474,7 @@ namespace rpf2fivem
 
                                                     if (!somethingResized)
                                                     {
-                                                        LogAppend("[CodeWalker] No textures were resized, skipping .ytd recreation.");
-                                                        break;
+                                                        LogAppend("[CodeWalker] No textures in dictionary were resized, all under 512 pixels.");
                                                     }
 
                                                     TextureDictionary dictionary = new TextureDictionary();
@@ -482,8 +504,15 @@ namespace rpf2fivem
                                 {
                                     if (!entry.NameLower.EndsWith("+hi", StringComparison.OrdinalIgnoreCase))
                                     {
-                                        LatestStreamingName = entry.NameLower.Remove(entry.NameLower.Length - 4);
-                                        LogAppend("[CodeWalker] Located streaming hash name in archive, (ytd) " + LatestStreamingName + ".");
+                                        string baseName = entry.NameLower.Remove(entry.NameLower.Length - 4); // Remove .ytd extension
+                                        string yftPath = directoryOffset + baseName + ".yft";
+                                        bool hasMatchingYft = File.Exists(yftPath);
+
+                                        if (hasMatchingYft)
+                                        {
+                                            LogAppend("[CodeWalker] Located streaming hash name with matching .yft file: " + baseName);
+                                            LatestStreamingName = baseName;
+                                        }
                                     }
                                 }
                             }
@@ -1156,6 +1185,63 @@ namespace rpf2fivem
             }
         }
 
+        private void LoadEncryptionData_CheckedChanged_2(object sender, EventArgs e)
+        {
+            if (!LoadEncryptionData.Checked) { return; }
+
+            // Check if the "Keys" directory exists in the current directory
+            if (Directory.Exists("Keys"))
+            {
+                LogAppend("[KeyExtraction] Saved magic data was found, loading into CodeWalker key structure.");
+                GTA5Keys.LoadMagicData();
+                LoadEncryptionData.Enabled = false;
+            }
+
+            // If the directory doesn't exist, prompt the user to select the GTA5.exe directory
+            else
+            {
+                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                {
+                    folderDialog.Description = "Select Directory with GTA5.exe";
+                    folderDialog.ShowNewFolderButton = false;
+
+                    if (folderDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string selectedPath = folderDialog.SelectedPath;
+                        if (File.Exists(Path.Combine(selectedPath, "GTA5.exe")))
+                        {
+                            LogAppend($"[KeyExtraction] Valid GTA5.exe directory selected: {selectedPath}");
+                            try
+                            {
+                                GTA5Keys.LoadFromPath(selectedPath);
+
+                                LogAppend("[KeyExtraction] Generating magic data files for future use...");
+
+
+                                if (!Directory.Exists("Keys"))
+                                {
+                                    Directory.CreateDirectory("Keys");
+                                }
+
+                                GTA5Keys.SaveToPath();
+
+                                LogAppend("[KeyExtraction] Successfully generated and saved magic data files.");
+
+                                LoadEncryptionData.Enabled = false;
+                            }
+                            catch (Exception ex)
+                            {
+                                ErrorAppend($"[KeyExtraction] Failed to load encryption data. Error: {ex.Message}");
+                            }
+                        }
+                        else
+                        {
+                            WarningAppend("[KeyExtraction] The selected directory does not contain GTA5.exe. Please select a valid directory.");
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
