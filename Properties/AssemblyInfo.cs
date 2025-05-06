@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Resources;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("rpf2fivem")]
 [assembly: AssemblyDescription("A tool for automatically converting dlc.rpf files to FiveM compatible resources.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("https://github.com/Avenze")]
+[assembly: AssemblyCompany("https://thefrostcloud.com")]
 [assembly: AssemblyProduct("rpf2fivem")]
 [assembly: AssemblyCopyright("Copyright © Frostcloud 2025")]
 [assembly: AssemblyTrademark("")]
@@ -32,5 +33,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyVersion("4.2.1.2")]
+[assembly: AssemblyFileVersion("4.2.1.2")]
+[assembly: NeutralResourcesLanguage("en")]
