@@ -19,7 +19,7 @@ namespace rpf2fivem.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -78,7 +78,7 @@ namespace rpf2fivem.Properties {
         ///data_file &apos;VEHICLE_LAYOUTS_FILE&apos;    &apos;data/vehiclelayouts*.meta&apos;
         ///data_file &apos;VEHICLE_METADATA_FILE&apos;    &apos;data/vehicles*.meta&apos;
         ///data_file &apos;CARCOLS_FILE&apos;            &apos;data/carcols*.meta&apos;
-        ///data_file &apos;VEHICLE_VARIATION_FILE&apos;  [rest of string was truncated]&quot;;.
+        ///data_file &apos;VEHICLE_VARIATION_FILE&apos;    &apos;data/carvaria [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fxmanifest_false {
             get {
@@ -104,7 +104,7 @@ namespace rpf2fivem.Properties {
         ///data_file &apos;VEHICLE_LAYOUTS_FILE&apos;    &apos;data/*/vehiclelayouts*.meta&apos;
         ///data_file &apos;VEHICLE_METADATA_FILE&apos;    &apos;data/*/vehicles*.meta&apos;
         ///data_file &apos;CARCOLS_FILE&apos;            &apos;data/*/carcols*.meta&apos;
-        ///data_file &apos;VEHICLE_ [rest of string was truncated]&quot;;.
+        ///data_file &apos;VEHICLE_VARIATION_FILE&apos;   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fxmanifest_true {
             get {
@@ -123,7 +123,7 @@ namespace rpf2fivem.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to prerelease.
+        ///   Looks up a localized string similar to production.
         /// </summary>
         internal static string sentry_enviroment {
             get {
@@ -132,7 +132,7 @@ namespace rpf2fivem.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to rpf2fivem@combined-support_3.1.0-patch1.
+        ///   Looks up a localized string similar to helper-scripts@4.2.1-patch2.
         /// </summary>
         internal static string sentry_version {
             get {
