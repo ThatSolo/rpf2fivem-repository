@@ -36,13 +36,17 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using rpf2fivem;
+using NUnit.Framework.Internal;
+using static rpf2fivem.Main;
 
 namespace CodeWalker.GameFiles
 {
     public static class GTA5Keys
     {
         public static string ToS = "(c)2017";
-
+        public static bool HasExtracted = false;
+        
         // aes decryption/encryption key...
         public static byte[] PC_AES_KEY; // 32
 
@@ -155,27 +159,55 @@ namespace CodeWalker.GameFiles
 
         public static void GenerateV2(byte[] exeData, Action<string> updateStatus)
         {
+            ProgramLogger.LogAppend("[KeyExtraction] Searching GTA5 executable for PC_AES_KEY_HASH...");
             var exeStr = new MemoryStream(exeData);
-
-            updateStatus?.Invoke("Searching for AES key...");
             PC_AES_KEY = HashSearch.SearchHash(exeStr, GTA5KeyHashes.PC_AES_KEY_HASH, 0x20);
-
-            updateStatus?.Invoke("Complete.");
         }
-
-
 
         public static void LoadFromPath(string path = ".\\Keys", string key = null)
         {
-            //PC_AES_KEY = File.ReadAllBytes(path + "\\gtav_aes_key.dat");
-            //PC_NG_KEYS = CryptoIO.ReadNgKeys(path + "\\gtav_ng_key.dat");
-            //PC_NG_DECRYPT_TABLES = CryptoIO.ReadNgTables(path + "\\gtav_ng_decrypt_tables.dat");
-            ////PC_NG_ENCRYPT_TABLES = CryptoIO.ReadNgTables(path + "\\gtav_ng_encrypt_tables.dat");
-            ////PC_NG_ENCRYPT_LUTs = CryptoIO.ReadNgLuts(path + "\\gtav_ng_encrypt_luts.dat");
-            //PC_LUT = File.ReadAllBytes(path + "\\gtav_hash_lut.dat");
+            if (!HasExtracted)
+            {
+                UseMagicData(path, key);
+                HasExtracted = true;
+            }
+            else
+            {
+                ProgramLogger.LogAppend("[KeyExtraction] Keys have already been extracted from the executable!");
+            }
+        }
 
-            //GenerateMagicData(path);
-            UseMagicData(path, key);
+        public static void LoadMagicData(string path = ".\\Keys")
+        {
+            if (HasExtracted)
+            {
+                ProgramLogger.LogAppend("[KeyExtraction] Keys have already been extracted from the executable!");
+                return;
+            }
+
+            PC_AES_KEY = File.ReadAllBytes(path + "\\gtav_aes_key.dat");
+            PC_NG_KEYS = CryptoIO.ReadNgKeys(path + "\\gtav_ng_key.dat");
+            PC_NG_DECRYPT_TABLES = CryptoIO.ReadNgTables(path + "\\gtav_ng_decrypt_tables.dat");
+            PC_LUT = File.ReadAllBytes(path + "\\gtav_hash_lut.dat");
+
+            try
+            {
+                byte[] fileBytes = File.ReadAllBytes(path + "\\gtav_awc_key.dat");
+                int uintCount = fileBytes.Length / sizeof(uint);
+                PC_AWC_KEY = new uint[uintCount];
+
+                for (int i = 0; i < uintCount; i++)
+                {
+                    PC_AWC_KEY[i] = BitConverter.ToUInt32(fileBytes, i * sizeof(uint));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading PC_AWC_KEY into CodeWalker key structure: {ex.Message}");
+                ProgramLogger.ErrorAppend("Error reading PC_AWC_KEY into CodeWalker key structure: " + ex.Message);
+            }
+
+            HasExtracted = true;
         }
 
         public static void SaveToPath(string path = ".\\Keys")
@@ -183,66 +215,24 @@ namespace CodeWalker.GameFiles
             File.WriteAllBytes(path + "\\gtav_aes_key.dat", PC_AES_KEY);
             CryptoIO.WriteNgKeys(path + "\\gtav_ng_key.dat", PC_NG_KEYS);
             CryptoIO.WriteNgTables(path + "\\gtav_ng_decrypt_tables.dat", PC_NG_DECRYPT_TABLES);
-            CryptoIO.WriteNgTables(path + "\\gtav_ng_encrypt_tables.dat", PC_NG_ENCRYPT_TABLES);
-            CryptoIO.WriteLuts(path + "\\gtav_ng_encrypt_luts.dat", PC_NG_ENCRYPT_LUTs);
             File.WriteAllBytes(path + "\\gtav_hash_lut.dat", PC_LUT);
-        }
 
-
-
-
-        private static void GenerateMagicData(string path = ".\\Keys")
-        {
-            byte[] b1 = File.ReadAllBytes(path + "\\gtav_ng_key.dat");
-            byte[] b2 = File.ReadAllBytes(path + "\\gtav_ng_decrypt_tables.dat");
-            byte[] b3 = File.ReadAllBytes(path + "\\gtav_hash_lut.dat");
-            byte[] b4 = File.ReadAllBytes(path + "\\gtav_awc_key.dat");
-
-            int bl = b1.Length + b2.Length + b3.Length + b4.Length;
-            byte[] b = new byte[bl];
-            int bp = 0;
-            Buffer.BlockCopy(b1, 0, b, bp, b1.Length); bp += b1.Length; // 27472
-            Buffer.BlockCopy(b2, 0, b, bp, b2.Length); bp += b2.Length; // 278528
-            Buffer.BlockCopy(b3, 0, b, bp, b3.Length); bp += b3.Length; // 256
-            Buffer.BlockCopy(b4, 0, b, bp, b4.Length); bp += b4.Length; // 16
-
-            byte[] db = null;
-            using (MemoryStream dms = new MemoryStream())
+            try
             {
-                using (DeflateStream ds = new DeflateStream(dms, CompressionMode.Compress))
+                using (var fs = new FileStream(path + "\\gtav_awc_key.dat", FileMode.Create))
+                using (var writer = new BinaryWriter(fs))
                 {
-                    ds.Write(b, 0, b.Length);
-                    ds.Close();
-                    db = dms.ToArray();
+                    foreach (var value in PC_AWC_KEY)
+                    {
+                        writer.Write(value);
+                    }
                 }
             }
-
-            if (db == null)
+            catch (Exception ex)
             {
-                throw new Exception("Error deflating data.");
+                Console.WriteLine($"Error writing PC_AWC_KEY to saved magic data: {ex.Message}");
+                ProgramLogger.ErrorAppend("Error writing PC_AWC_KEY to saved magic data: " + ex.Message);
             }
-
-            db = GTACrypto.EncryptAESData(db, PC_AES_KEY);
-
-
-            Random rnd = new Random((int)JenkHash.GenHash(PC_AES_KEY));
-            int dbl = db.Length;
-            byte[] rb1 = new byte[dbl];
-            byte[] rb2 = new byte[dbl];
-            byte[] rb3 = new byte[dbl];
-            byte[] rb4 = new byte[dbl];
-            rnd.NextBytes(rb1);
-            rnd.NextBytes(rb2);
-            rnd.NextBytes(rb3);
-            rnd.NextBytes(rb4);
-            byte[] fb = new byte[dbl];
-            for (int i = 0; i < dbl; i++)
-            {
-                fb[i] = (byte)((db[i] + rb1[i] + rb2[i] + rb3[i] + rb4[i]) & 0xFF);
-            }
-
-            File.WriteAllBytes(path + "\\magic.dat", fb);
-
         }
 
         private static void UseMagicData(string path, string key)
@@ -250,7 +240,32 @@ namespace CodeWalker.GameFiles
 
             if (string.IsNullOrEmpty(key))
             {
-                byte[] exedata = File.ReadAllBytes(path + "\\gta5.exe");
+                byte[] exedata = null;
+
+                try
+                {
+                    exedata = File.ReadAllBytes(path + @"\GTA5.exe");
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    Console.WriteLine("Access to the file is denied: " + ex.Message);
+                    ProgramLogger.ErrorAppend("Access to the file is denied: " + ex.Message);
+                    return;
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine("An I/O error occurred: " + ex.Message);
+                    ProgramLogger.ErrorAppend("An I/O error occurred: " + ex.Message);
+                    return;
+                }
+
+                if (exedata.Length < 1)
+                {
+                    Console.WriteLine("Error reading GTA5.exe file. Read MemoryStream was null.");
+                    ProgramLogger.ErrorAppend("Error reading GTA5.exe file. Read MemoryStream was null.");
+                    return;
+                }
+
                 GenerateV2(exedata, null);
             }
             else
@@ -259,6 +274,16 @@ namespace CodeWalker.GameFiles
             }
             //GenerateMagicData();
 
+            if (PC_AES_KEY == null)
+            {
+                Console.WriteLine("Reading GTA5.exe and attempting to extract AES key. Returned AES key was null.");
+                ProgramLogger.ErrorAppend("Reading GTA5.exe and attempting to extract AES key. Returned AES key was null.");
+                return;
+            }
+            else
+            {
+                ProgramLogger.LogAppend("[KeyExtraction] Successfully extracted PC_AES_KEY from GTA5 executable!");
+            }
 
             Random rnd = new Random((int)JenkHash.GenHash(PC_AES_KEY));
             byte[] m = Resources.magic;
@@ -739,7 +764,7 @@ namespace CodeWalker.GameFiles
     public static class HashSearch
     {
         private const long BLOCK_LENGTH = 1048576;
-        private const long ALIGN_LENGTH = 16;
+        private const long ALIGN_LENGTH = 8;
 
         public static byte[] SearchHash(Stream stream, byte[] hash, int length = 32)
         {
@@ -1454,6 +1479,10 @@ namespace CodeWalker.GameFiles
 
              */
 
+            if (LUT == null)
+            {
+                throw new InvalidOperationException("An NG Decryption operation was attempted, while no GTA5 magic data/LUT hash has been initialized.");
+            }
 
             uint result = 0;
             for (int index = 0; index < text.Length; index++)
