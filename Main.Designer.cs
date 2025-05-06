@@ -31,6 +31,8 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.btnClearQueue = new System.Windows.Forms.Button();
             this.btnAddQueue = new System.Windows.Forms.Button();
@@ -43,6 +45,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.log = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.LoadEncryptionData = new System.Windows.Forms.CheckBox();
             this.QbCoreHelper = new System.Windows.Forms.CheckBox();
             this.CompressCheck = new System.Windows.Forms.CheckBox();
             this.QbxCoreHelper = new System.Windows.Forms.CheckBox();
@@ -56,8 +59,6 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsQueue = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -82,6 +83,26 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "RPF Selector";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(325, 68);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(60, 23);
+            this.button2.TabIndex = 22;
+            this.button2.Text = "Load";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(391, 68);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(60, 23);
+            this.button1.TabIndex = 21;
+            this.button1.Text = "Save";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // textBox1
             // 
@@ -177,9 +198,10 @@
             this.label2.Enabled = false;
             this.label2.Location = new System.Drawing.Point(116, -3);
             this.label2.Name = "label2";
+            this.label2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.label2.Size = new System.Drawing.Size(479, 16);
             this.label2.TabIndex = 14;
-            this.label2.Text = "build rpf2fivem@helper-scripts_4.1.0-patch1 | developed by: github.com/Avenze";
+            this.label2.Text = "build rpf2fivem@helper-scripts_4.2.1-patch2 | developed by: github.com/Avenze";
             // 
             // log
             // 
@@ -192,6 +214,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.LoadEncryptionData);
             this.groupBox3.Controls.Add(this.QbCoreHelper);
             this.groupBox3.Controls.Add(this.CompressCheck);
             this.groupBox3.Controls.Add(this.QbxCoreHelper);
@@ -203,6 +226,17 @@
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Resource";
+            // 
+            // LoadEncryptionData
+            // 
+            this.LoadEncryptionData.AutoSize = true;
+            this.LoadEncryptionData.Location = new System.Drawing.Point(12, 126);
+            this.LoadEncryptionData.Name = "LoadEncryptionData";
+            this.LoadEncryptionData.Size = new System.Drawing.Size(349, 20);
+            this.LoadEncryptionData.TabIndex = 21;
+            this.LoadEncryptionData.Text = "load encryption keys from gta executable (certain .rpfs)";
+            this.LoadEncryptionData.UseVisualStyleBackColor = true;
+            this.LoadEncryptionData.CheckedChanged += new System.EventHandler(this.LoadEncryptionData_CheckedChanged_2);
             // 
             // QbCoreHelper
             // 
@@ -314,26 +348,6 @@
             this.tsBar.Name = "tsBar";
             this.tsBar.Size = new System.Drawing.Size(100, 16);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(391, 68);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(60, 23);
-            this.button1.TabIndex = 21;
-            this.button1.Text = "Save";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(325, 68);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(60, 23);
-            this.button2.TabIndex = 22;
-            this.button2.Text = "Load";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -350,7 +364,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Main";
-            this.Text = "rpf2fivem convertor";
+            this.Text = "rpf2fivem | 4.2.1-patch2 | github.com/Avenze/rpf2fivem-repository";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -395,5 +409,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox LoadEncryptionData;
     }
 }
