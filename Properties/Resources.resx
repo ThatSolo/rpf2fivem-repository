@@ -147,19 +147,19 @@ author 'rpf2fivem'
 description 'Generated using rpf2fivem, a tool for converting GTA5-Mods to FiveM'
 
 files {
-    'data/*/*.meta',
-    'data/*/*.xml',
-    'data/*/*.dat',
-    'data/*/*.ytyp'
+    'data/**/*.meta',
+    'data/**/*.xml',
+    'data/**/*.dat',
+    'data/**/*.ytyp'
 }
 
-data_file 'HANDLING_FILE'            'data/*/handling*.meta'
-data_file 'VEHICLE_LAYOUTS_FILE'    'data/*/vehiclelayouts*.meta'
-data_file 'VEHICLE_METADATA_FILE'    'data/*/vehicles*.meta'
-data_file 'CARCOLS_FILE'            'data/*/carcols*.meta'
-data_file 'VEHICLE_VARIATION_FILE'    'data/*/carvariations*.meta'
-data_file 'CONTENT_UNLOCKING_META_FILE' 'data/*/*unlocks.meta'
-data_file 'PTFXASSETINFO_FILE' 'data/*/ptfxassetinfo.meta'</value>
+data_file 'HANDLING_FILE'            'data/**/handling*.meta'
+data_file 'VEHICLE_LAYOUTS_FILE'    'data/**/vehiclelayouts*.meta'
+data_file 'VEHICLE_METADATA_FILE'    'data/**/vehicles*.meta'
+data_file 'CARCOLS_FILE'            'data/**/carcols*.meta'
+data_file 'VEHICLE_VARIATION_FILE'    'data/**/carvariations*.meta'
+data_file 'CONTENT_UNLOCKING_META_FILE' 'data/**/*unlocks.meta'
+data_file 'PTFXASSETINFO_FILE' 'data/**/ptfxassetinfo.meta'</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="magic" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -169,6 +169,6 @@ data_file 'PTFXASSETINFO_FILE' 'data/*/ptfxassetinfo.meta'</value>
     <value>production</value>
   </data>
   <data name="sentry_version" xml:space="preserve">
-    <value>helper-scripts@4.2.1-patch2</value>
+    <value>helper-scripts@4.2.2-patch3</value>
   </data>
 </root>

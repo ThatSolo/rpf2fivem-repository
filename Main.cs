@@ -37,7 +37,7 @@ namespace rpf2fivem
         string combinedFolderString = "";
         string LatestStreamingName = "";
 
-        string CurrentBuildName = "helper-scripts@4.2.1-patch2";
+        string CurrentBuildName = "helper-scripts@4.2.2-patch3";
         string LatestBuildName = "";
         bool ApplicationSafeShutdown = false;
 

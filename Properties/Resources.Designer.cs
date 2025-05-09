@@ -94,17 +94,17 @@ namespace rpf2fivem.Properties {
         ///description &apos;Generated using rpf2fivem, a tool for converting GTA5-Mods to FiveM&apos;
         ///
         ///files {
-        ///    &apos;data/*/*.meta&apos;,
-        ///    &apos;data/*/*.xml&apos;,
-        ///    &apos;data/*/*.dat&apos;,
-        ///    &apos;data/*/*.ytyp&apos;
+        ///    &apos;data/**/*.meta&apos;,
+        ///    &apos;data/**/*.xml&apos;,
+        ///    &apos;data/**/*.dat&apos;,
+        ///    &apos;data/**/*.ytyp&apos;
         ///}
         ///
-        ///data_file &apos;HANDLING_FILE&apos;            &apos;data/*/handling*.meta&apos;
-        ///data_file &apos;VEHICLE_LAYOUTS_FILE&apos;    &apos;data/*/vehiclelayouts*.meta&apos;
-        ///data_file &apos;VEHICLE_METADATA_FILE&apos;    &apos;data/*/vehicles*.meta&apos;
-        ///data_file &apos;CARCOLS_FILE&apos;            &apos;data/*/carcols*.meta&apos;
-        ///data_file &apos;VEHICLE_VARIATION_FILE&apos;   [rest of string was truncated]&quot;;.
+        ///data_file &apos;HANDLING_FILE&apos;            &apos;data/**/handling*.meta&apos;
+        ///data_file &apos;VEHICLE_LAYOUTS_FILE&apos;    &apos;data/**/vehiclelayouts*.meta&apos;
+        ///data_file &apos;VEHICLE_METADATA_FILE&apos;    &apos;data/**/vehicles*.meta&apos;
+        ///data_file &apos;CARCOLS_FILE&apos;            &apos;data/**/carcols*.meta&apos;
+        ///data_file &apos;VEHICLE_VARIATION [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fxmanifest_true {
             get {
@@ -132,7 +132,7 @@ namespace rpf2fivem.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to helper-scripts@4.2.1-patch2.
+        ///   Looks up a localized string similar to helper-scripts@4.2.2-patch3.
         /// </summary>
         internal static string sentry_version {
             get {
