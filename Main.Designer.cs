@@ -364,7 +364,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Main";
-            this.Text = "rpf2fivem | 4.2.1-patch2 | github.com/Avenze/rpf2fivem-repository";
+            this.Text = "rpf2fivem | 4.2.2-patch3 | github.com/Avenze/rpf2fivem-repository";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
