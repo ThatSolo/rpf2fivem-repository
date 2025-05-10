@@ -201,7 +201,7 @@
             this.label2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.label2.Size = new System.Drawing.Size(479, 16);
             this.label2.TabIndex = 14;
-            this.label2.Text = "build rpf2fivem@helper-scripts_4.2.2-patch3 | developed by: github.com/Avenze";
+            this.label2.Text = "build rpf2fivem@helper-scripts_4.2.2-patch4 | developed by: github.com/Avenze";
             // 
             // log
             // 
@@ -364,7 +364,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Main";
-            this.Text = "rpf2fivem | 4.2.2-patch3 | github.com/Avenze/rpf2fivem-repository";
+            this.Text = "rpf2fivem | 4.2.2-patch4 | github.com/Avenze/rpf2fivem-repository";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
