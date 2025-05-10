@@ -37,7 +37,7 @@ namespace rpf2fivem
         string combinedFolderString = "";
         string LatestStreamingName = "";
 
-        string CurrentBuildName = "helper-scripts@4.2.2-patch3";
+        string CurrentBuildName = "helper-scripts@4.2.2-patch4";
         string LatestBuildName = "";
         bool ApplicationSafeShutdown = false;
 
@@ -128,17 +128,6 @@ namespace rpf2fivem
                 WarningAppend("[Application Update] A new version of rpf2fivem is available, please update to the latest version!");
                 WarningAppend("[Application Update] Current version: " + CurrentBuildName);
                 WarningAppend("[Application Update] Latest version: " + LatestBuildName);
-
-                QbxCoreHelper.Enabled = false;
-                QbCoreHelper.Enabled = false;
-                fivemresname_tb.Enabled = false;
-                textBox1.Enabled = false;
-                CompressCheck.Enabled = false;
-                btnClearQueue.Enabled = false;
-                LoadEncryptionData.Enabled = false;
-
-                ApplicationSafeShutdown = true;
-                return;
             }
 
             // Minor setup
@@ -447,15 +436,48 @@ namespace rpf2fivem
                                                             byte[] dds = DDSIO.GetDDSFile(texture.Value);
                                                             File.WriteAllBytes("./NConvert/" + texture.Value.Name + ".dds", dds);
 
-                                                            Process p = new Process();
-                                                            p.StartInfo.FileName = @"./NConvert/nconvert.exe";
-                                                            p.StartInfo.Arguments = $"-out dds -resize 50% 50% -overwrite ./NConvert/{texture.Value.Name}.dds";
-                                                            p.StartInfo.UseShellExecute = false;
-                                                            p.StartInfo.CreateNoWindow = true;
-                                                            p.StartInfo.RedirectStandardOutput = true;
-                                                            p.Start();
+                                                            try
+                                                            {
+                                                                using (Process SizingProcess = new Process())
+                                                                {
+                                                                    if (!File.Exists(@"./NConvert/nconvert.exe"))
+                                                                    {
+                                                                        throw new ArgumentException("NConvert binaries are null or non existant.");
+                                                                    }
+                                                                    if (string.IsNullOrEmpty(texture.Value?.Name))
+                                                                    {
+                                                                        throw new ArgumentException("Texture name is null or empty.");
+                                                                    }
 
-                                                            LogAppend("[NConvert] Sucessfully resized texture (" + texture.Value.Name + ") to 50%!");
+                                                                    SizingProcess.StartInfo.FileName = @"./NConvert/nconvert.exe";
+                                                                    SizingProcess.StartInfo.Arguments = $"-out dds -resize 50% 50% -overwrite \"./NConvert/{texture.Value.Name}.dds\"";
+                                                                    SizingProcess.StartInfo.UseShellExecute = false;
+                                                                    SizingProcess.StartInfo.CreateNoWindow = true;
+                                                                    SizingProcess.StartInfo.RedirectStandardOutput = true;
+                                                                    SizingProcess.StartInfo.RedirectStandardError = true;
+
+                                                                    SizingProcess.Start();
+                                                                    SizingProcess.WaitForExit();
+
+                                                                    if (SizingProcess.ExitCode != 0)
+                                                                    {
+                                                                        string error = SizingProcess.StandardError.ReadToEnd();
+                                                                        throw new InvalidOperationException($"Process exited with code {SizingProcess.ExitCode}. Error: {error}");
+                                                                    }
+                                                                }
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                // If the process fails, we can just add the original texture to the dictionary
+                                                                Dicts.Add(texture.Key, texture.Value);
+                                                                File.Delete(directoryOffset + texture.Value.Name + ".dds");
+
+                                                                // Log the error
+                                                                WarningAppend($"[NConvert] Failed to resize texture ({texture.Value.Name}) to 50%!");
+                                                                WarningAppend($"[NConvert] Binary returned the error: {ex.Message}");
+                                                                break;
+                                                            }
+
                                                             File.Move("./NConvert/" + texture.Value.Name + ".dds", directoryOffset + texture.Value.Name + ".dds");
 
                                                             byte[] resizedData = File.ReadAllBytes(directoryOffset + texture.Value.Name + ".dds");
