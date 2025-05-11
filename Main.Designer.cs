@@ -59,6 +59,7 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsQueue = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.SelectArchive = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -67,6 +68,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.SelectArchive);
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.textBox1);
@@ -108,7 +110,7 @@
             // 
             this.textBox1.Location = new System.Drawing.Point(9, 40);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(443, 22);
+            this.textBox1.Size = new System.Drawing.Size(336, 22);
             this.textBox1.TabIndex = 20;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
@@ -116,7 +118,7 @@
             // 
             this.btnClearQueue.Location = new System.Drawing.Point(114, 68);
             this.btnClearQueue.Name = "btnClearQueue";
-            this.btnClearQueue.Size = new System.Drawing.Size(102, 23);
+            this.btnClearQueue.Size = new System.Drawing.Size(89, 23);
             this.btnClearQueue.TabIndex = 19;
             this.btnClearQueue.Text = "Clear queue";
             this.btnClearQueue.UseVisualStyleBackColor = true;
@@ -201,7 +203,7 @@
             this.label2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.label2.Size = new System.Drawing.Size(479, 16);
             this.label2.TabIndex = 14;
-            this.label2.Text = "build rpf2fivem@helper-scripts_4.2.2-patch4 | developed by: github.com/Avenze";
+            this.label2.Text = "build rpf2fivem@helper-scripts_4.3.1-patch5 | developed by: github.com/Avenze";
             // 
             // log
             // 
@@ -348,6 +350,16 @@
             this.tsBar.Name = "tsBar";
             this.tsBar.Size = new System.Drawing.Size(100, 16);
             // 
+            // SelectArchive
+            // 
+            this.SelectArchive.Location = new System.Drawing.Point(351, 39);
+            this.SelectArchive.Name = "SelectArchive";
+            this.SelectArchive.Size = new System.Drawing.Size(100, 23);
+            this.SelectArchive.TabIndex = 23;
+            this.SelectArchive.Text = "Select archive";
+            this.SelectArchive.UseVisualStyleBackColor = true;
+            this.SelectArchive.Click += new System.EventHandler(this.SelectArchive_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -364,7 +376,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Main";
-            this.Text = "rpf2fivem | 4.2.2-patch4 | github.com/Avenze/rpf2fivem-repository";
+            this.Text = "rpf2fivem | 4.3.1-patch5 | github.com/Avenze/rpf2fivem-repository";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -410,5 +422,6 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox LoadEncryptionData;
+        private System.Windows.Forms.Button SelectArchive;
     }
 }
