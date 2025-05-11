@@ -37,7 +37,7 @@ namespace rpf2fivem
         string combinedFolderString = "";
         string LatestStreamingName = "";
 
-        string CurrentBuildName = "helper-scripts@4.2.2-patch4";
+        string CurrentBuildName = "helper-scripts@4.3.1-patch5";
         string LatestBuildName = "";
         bool ApplicationSafeShutdown = false;
 
@@ -587,6 +587,25 @@ namespace rpf2fivem
             }
         }
 
+        private void InvokeQueueVehicleHelper()
+        {
+            if (QbxCoreHelperState || QbCoreHelperState)
+            {
+                var VehicleDataObject = InvokeHelperQuestionnaire();
+                vehicleArray.Add(new VehicleData
+                {
+                    InternalReference = fivemresname_tb.Text,
+                    Name = VehicleDataObject.Name,
+                    Brand = VehicleDataObject.Brand,
+                    Model = VehicleDataObject.Model,
+                    Price = VehicleDataObject.Price,
+                    Category = VehicleDataObject.Category,
+                    Type = VehicleDataObject.Type,
+                    Hash = VehicleDataObject.Hash
+                });
+            }
+        }
+
         private void InvokeHelperScripts(string StreamingModelName, string InternalReference)
         {
             if (QbxCoreHelperState || QbCoreHelperState)
@@ -864,10 +883,27 @@ namespace rpf2fivem
                     DataFolder = StructureFolders.dataFolder;
 
                 // Download the resource archive
-                LogAppend("[Worker] Downloading archive...");
-                if (CurrentItem != "")
+                var CleanedItemName = CurrentItem.Replace($"<{SingleEnviromentFolder}>", "");
+                if (CurrentItem != "" && CleanedItemName.Contains("https://files.gta5-mods.com/") && !CleanedItemName.Contains("XXXCARNAMEXXXX"))
                 {
-                    await AsyncFileDownload(CurrentItem.Replace($"<{SingleEnviromentFolder}>", ""));
+                    LogAppend("[Worker] Downloading vehicle archive from GTA5-Mods...");
+                    await AsyncFileDownload(CleanedItemName);
+                }
+                else if (CurrentItem != "" && File.Exists(CleanedItemName) && (CleanedItemName.EndsWith(".rar", StringComparison.OrdinalIgnoreCase) || CleanedItemName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) || CleanedItemName.EndsWith(".7z", StringComparison.OrdinalIgnoreCase)))
+                {
+                    LogAppend("[Worker] Processing locally stored vehicle archive...");
+                    string destinationPath = Path.Combine("cache", Path.GetFileName(CleanedItemName));
+                    File.Copy(CleanedItemName, destinationPath, overwrite: true);
+                }
+                else
+                {
+                    currentQueue += 1;
+                    cleanUp();
+                    StopwatchTimer.Stop();
+                    jobTime.Text = "| Last job took: " + StopwatchTimer.ElapsedMilliseconds + " ms";
+
+                    WarningAppend($"[Worker] File {CleanedItemName} does not exist, skipping move to cache.");
+                    continue;
                 }
 
                 // Move the downloaded archive to the cache folder
@@ -982,42 +1018,52 @@ namespace rpf2fivem
             LogAppend("[InputHandler] Adding specificed job to the queue...");
 
             // Check for the helper states and if so, invoke the helper questionnaire
-            if (QbxCoreHelperState || QbCoreHelperState)
-            {
-                var VehicleDataObject = InvokeHelperQuestionnaire();
-                vehicleArray.Add(new VehicleData
-                {
-                    InternalReference = fivemresname_tb.Text,
-                    Name = VehicleDataObject.Name,
-                    Brand = VehicleDataObject.Brand,
-                    Model = VehicleDataObject.Model,
-                    Price = VehicleDataObject.Price,
-                    Category = VehicleDataObject.Category,
-                    Type = VehicleDataObject.Type,
-                    Hash = VehicleDataObject.Hash
-                });
-            }
+            InvokeQueueVehicleHelper();
 
             // Run the standard function
             queueList.Items.Add($"<{fivemresname_tb.Text}> " + textBox1.Text);
             fivemresname_tb.Text = rnd.Next(2147483647).ToString();
             QueueHandler(0, queueList.Items.Count);
 
+            // Reset the input textbox
             textBox1.Clear();
             textBox1.Text = "https://files.gta5-mods.com/uploads/XXXCARNAMEXXXX/XXXCARNAMEXXXX.zip";
 
+            // Return active control and start button
             this.ActiveControl = label1;
             btnStart.Enabled = queueList.Items.Count > 0;
         }
 
+        private void SelectArchive_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "Archive files (*.rar;*.zip;*.7z)|*.rar;*.zip;*.7z";
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFilePath = openFileDialog.FileName;
+                    textBox1.Text = selectedFilePath;
+                }
+            }
+        }
+
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if (textBox1.Text.Contains("https://files.gta5-mods.com/") && !textBox1.Text.Contains("XXXCARNAMEXXXX") && ApplicationSafeShutdown == false)
+            if (textBox1.Text.Contains("https://files.gta5-mods.com/") && !textBox1.Text.Contains("XXXCARNAMEXXXX"))
             {
                 gta5mods_status.ForeColor = Color.Green;
                 gta5mods_status.Text = "OK";
                 btnAddQueue.Enabled = true;
 
+            }
+            else if (File.Exists(textBox1.Text) && (textBox1.Text.EndsWith(".rar", StringComparison.OrdinalIgnoreCase) || textBox1.Text.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) || textBox1.Text.EndsWith(".7z", StringComparison.OrdinalIgnoreCase)))
+            {
+                gta5mods_status.ForeColor = Color.Green;
+                gta5mods_status.Text = "OK";
+                btnAddQueue.Enabled = true;
             }
             else
             {
@@ -1265,5 +1311,4 @@ namespace rpf2fivem
             }
         }
     }
-
 }
