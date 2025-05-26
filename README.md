@@ -36,3 +36,4 @@ https://dotnet.microsoft.com/download/dotnet/5.0/runtime
 ## Credits for rpf2fivem
 - dexyfex (CodeWalker - https://github.com/dexyfex/CodeWalker)
 - vscorpio (gta5rpf-to-fivem - https://github.com/vscorpio/gta5rpf-to-fivem) (special thanks for developing the initial project!)
+- Jupe/xVice1337 (https://github.com/xVice1337) (helping with development and adding a lot of useful features!)
