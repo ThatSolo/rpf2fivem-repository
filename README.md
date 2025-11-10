@@ -1,7 +1,7 @@
 ![rpf2fivem-banner](https://github.com/user-attachments/assets/f360ea8a-d588-4cd9-9094-3f6432f7c744)
 
-*This project is maintained as an open-source project by us at Frostcloud, and contributions are always welcome! https://thefrostcloud.com* <br>
-*We'd love to be part of your next project that requires hosting, check us out!*
+*This project is maintained as an open-source project by us at Frostcloud, and contributions are always welcome!* <br>
+*We'd love to be part of your next project that requires hosting, check us out!* https://thefrostcloud.com
 
 # rpf2fivem
 We've all been through this, you started working on your FiveM server and started adding vehicles, but, you got tired of switching back and forth between OpenIV and 100 notepads open. I made this tool for you.
