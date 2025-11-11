@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.SelectArchive = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -59,7 +60,6 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsQueue = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.SelectArchive = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -85,6 +85,16 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "RPF Selector";
+            // 
+            // SelectArchive
+            // 
+            this.SelectArchive.Location = new System.Drawing.Point(351, 39);
+            this.SelectArchive.Name = "SelectArchive";
+            this.SelectArchive.Size = new System.Drawing.Size(100, 23);
+            this.SelectArchive.TabIndex = 23;
+            this.SelectArchive.Text = "Select archive";
+            this.SelectArchive.UseVisualStyleBackColor = true;
+            this.SelectArchive.Click += new System.EventHandler(this.SelectArchive_Click);
             // 
             // button2
             // 
@@ -203,7 +213,7 @@
             this.label2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.label2.Size = new System.Drawing.Size(479, 16);
             this.label2.TabIndex = 14;
-            this.label2.Text = "build rpf2fivem@helper-scripts_4.3.1-patch5 | developed by: github.com/Avenze";
+            this.label2.Text = "build rpf2fivem@helper-scripts_4.3.1-patch6 | developed by: github.com/Avenze";
             // 
             // log
             // 
@@ -350,16 +360,6 @@
             this.tsBar.Name = "tsBar";
             this.tsBar.Size = new System.Drawing.Size(100, 16);
             // 
-            // SelectArchive
-            // 
-            this.SelectArchive.Location = new System.Drawing.Point(351, 39);
-            this.SelectArchive.Name = "SelectArchive";
-            this.SelectArchive.Size = new System.Drawing.Size(100, 23);
-            this.SelectArchive.TabIndex = 23;
-            this.SelectArchive.Text = "Select archive";
-            this.SelectArchive.UseVisualStyleBackColor = true;
-            this.SelectArchive.Click += new System.EventHandler(this.SelectArchive_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -376,7 +376,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Main";
-            this.Text = "rpf2fivem | 4.3.1-patch5 | github.com/Avenze/rpf2fivem-repository";
+            this.Text = "rpf2fivem | 4.3.1-patch6 | github.com/Frostcloud-Development/rpf2fivem-repository" +
+    "";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
