@@ -132,7 +132,7 @@ namespace rpf2fivem.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to helper-scripts@4.3.1-patch5.
+        ///   Looks up a localized string similar to helper-scripts@4.3.1-patch6.
         /// </summary>
         internal static string sentry_version {
             get {
