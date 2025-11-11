@@ -37,7 +37,7 @@ namespace rpf2fivem
         string combinedFolderString = "";
         string LatestStreamingName = "";
 
-        string CurrentBuildName = "helper-scripts@4.3.1-patch5";
+        string CurrentBuildName = "helper-scripts@4.3.1-patch6";
         string LatestBuildName = "";
         bool ApplicationSafeShutdown = false;
 
@@ -90,7 +90,7 @@ namespace rpf2fivem
                 var client = new HttpClient();
                 client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("CSharpApp", "1.0"));
 
-                string url = $"https://api.github.com/repos/Avenze/rpf2fivem-repository/releases/latest";
+                string url = $"https://api.github.com/repos/Frostcloud-Development/rpf2fivem-repository/releases/latest";
                 HttpResponseMessage response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
@@ -137,7 +137,7 @@ namespace rpf2fivem
             LogAppend("rpf2fivem");
             LogAppend("---------------");
             LogAppend("Developed by Avenzey#6184 (thanks to https://github.com/vscorpio for developing the original version!)");
-            LogAppend("GitHub repository: https://github.com/Avenze/rpf2fivem-repository");
+            LogAppend("GitHub repository: https://github.com/Frostcloud-Development/rpf2fivem-repository");
             LogAppend("Discord support: https://discord.gg/C4e4q6g");
             LogAppend("Patreon: https://patreon.com/avenzey");
             LogAppend("---------------");

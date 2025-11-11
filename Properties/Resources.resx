@@ -169,6 +169,6 @@ data_file 'PTFXASSETINFO_FILE' 'data/**/ptfxassetinfo.meta'</value>
     <value>production</value>
   </data>
   <data name="sentry_version" xml:space="preserve">
-    <value>helper-scripts@4.3.1-patch5</value>
+    <value>helper-scripts@4.3.1-patch6</value>
   </data>
 </root>
