@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report for an issue that occured within rpf2fivem
 title: "[BUG]"
-labels: bug, invalid
+labels: bug, invalid, techdebt
 assignees: Avenze
 
 ---
