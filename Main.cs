@@ -37,9 +37,8 @@ namespace rpf2fivem
         string combinedFolderString = "";
         string LatestStreamingName = "";
 
-        string CurrentBuildName = "helper-scripts@4.3.1-patch6";
-        string LatestBuildName = "";
-        bool ApplicationSafeShutdown = false;
+		private string appVersion = Properties.Resources.sentry_version;
+		private string latestVersion = "";
 
         bool QbCoreHelperState = false;
         bool QbxCoreHelperState = false;
@@ -78,7 +77,7 @@ namespace rpf2fivem
             var task = GetLatestReleaseName("OWNER", "REPO");
             task.Wait(); // since Main can't be async in 7.3
 
-            LatestBuildName = task.Result;
+			latestVersion = task.Result;
 
             InitializeComponent();
         }
@@ -123,12 +122,16 @@ namespace rpf2fivem
             }
 
             // Version checking
-            if (LatestBuildName != CurrentBuildName)
+            if (latestVersion != appVersion)
             {
                 WarningAppend("[Application Update] A new version of rpf2fivem is available, please update to the latest version!");
-                WarningAppend("[Application Update] Current version: " + CurrentBuildName);
-                WarningAppend("[Application Update] Latest version: " + LatestBuildName);
+                WarningAppend("[Application Update] Current version: " + appVersion);
+                WarningAppend("[Application Update] Latest version: " + latestVersion);
             }
+
+			// Versioning setup
+			Text = $"{appVersion} | github.com/Frostcloud-Development/clip2load";
+			label2.Text = $"build {appVersion} | developed by: github.com/Avenze";
 
             // Minor setup
             this.ActiveControl = label1; // prevent random textbox focus
@@ -1309,6 +1312,11 @@ namespace rpf2fivem
                     }
                 }
             }
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

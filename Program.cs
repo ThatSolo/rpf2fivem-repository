@@ -16,19 +16,33 @@ namespace rpf2fivem
             SentrySdk.Init(o =>
             {
                 o.Dsn = "https://d40cb8d380bf40a0a1b8c99f0d214978@o1113761.ingest.sentry.io/4504494068334592";
-                o.Debug = true;
+				o.Debug = true;
                 o.TracesSampleRate = 1.0;
                 o.IsGlobalModeEnabled = true;
-                o.Release = Properties.Resources.sentry_version;
+				o.Release = Properties.Resources.sentry_version;
+                o.Environment = "production";
                 o.AutoSessionTracking = true;
-                o.Environment = Properties.Resources.sentry_enviroment;
-                o.StackTraceMode = Sentry.StackTraceMode.Enhanced;
+
+				o.SetBeforeSend((sentryEvent, hint) =>
+                {
+                    // Add custom context to all events
+                    sentryEvent.SetTag("os", Environment.OSVersion.ToString());
+                    return sentryEvent;
+                });
+                
+                o.AttachStacktrace = true;
+                o.SendDefaultPii = false;
             });
 
+			// Add global exception handler
+            Application.ThreadException += (sender, e) =>
+            {
+                SentrySdk.CaptureException(e.Exception);
+            };
+
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
-
             Application.Run(new Main());
         }
     }
