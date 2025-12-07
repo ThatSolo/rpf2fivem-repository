@@ -78,7 +78,7 @@ namespace rpf2fivem.Properties {
         ///data_file &apos;VEHICLE_LAYOUTS_FILE&apos;    &apos;data/vehiclelayouts*.meta&apos;
         ///data_file &apos;VEHICLE_METADATA_FILE&apos;    &apos;data/vehicles*.meta&apos;
         ///data_file &apos;CARCOLS_FILE&apos;            &apos;data/carcols*.meta&apos;
-        ///data_file &apos;VEHICLE_VARIATION_FILE&apos;    &apos;data/carvaria [rest of string was truncated]&quot;;.
+        ///data_file &apos;VEHICLE_VARIATION_FILE&apos;  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fxmanifest_false {
             get {
@@ -104,7 +104,7 @@ namespace rpf2fivem.Properties {
         ///data_file &apos;VEHICLE_LAYOUTS_FILE&apos;    &apos;data/**/vehiclelayouts*.meta&apos;
         ///data_file &apos;VEHICLE_METADATA_FILE&apos;    &apos;data/**/vehicles*.meta&apos;
         ///data_file &apos;CARCOLS_FILE&apos;            &apos;data/**/carcols*.meta&apos;
-        ///data_file &apos;VEHICLE_VARIATION [rest of string was truncated]&quot;;.
+        ///data_file &apos; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fxmanifest_true {
             get {
@@ -132,11 +132,20 @@ namespace rpf2fivem.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to helper-scripts@4.3.1-patch6.
+        ///   Looks up a localized string similar to rpf2fivem@4.3.2-release.
         /// </summary>
         internal static string sentry_version {
             get {
                 return ResourceManager.GetString("sentry_version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to rpf2fivem@4.3.2-release.
+        /// </summary>
+        internal static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
     }

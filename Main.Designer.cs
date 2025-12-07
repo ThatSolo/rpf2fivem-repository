@@ -208,12 +208,13 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Enabled = false;
-            this.label2.Location = new System.Drawing.Point(116, -3);
+            this.label2.Location = new System.Drawing.Point(198, -3);
             this.label2.Name = "label2";
             this.label2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.label2.Size = new System.Drawing.Size(479, 16);
+            this.label2.Size = new System.Drawing.Size(397, 16);
             this.label2.TabIndex = 14;
-            this.label2.Text = "build rpf2fivem@helper-scripts_4.3.1-patch6 | developed by: github.com/Avenze";
+            this.label2.Text = "build rpf2fivem@4.3.1-release | developed by: github.com/Avenze";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // log
             // 

@@ -436,8 +436,16 @@ namespace rpf2fivem
                                                     {
                                                         if (texture.Value.Width > 512) // Only resize if it is greater than 1440p
                                                         {
-                                                            byte[] dds = DDSIO.GetDDSFile(texture.Value);
-                                                            File.WriteAllBytes("./NConvert/" + texture.Value.Name + ".dds", dds);
+															try {
+																byte[] dds = DDSIO.GetDDSFile(texture.Value);
+                                                            	File.WriteAllBytes("./NConvert/" + texture.Value.Name + ".dds", dds);
+															}
+															catch (Exception ddsException)
+															{
+																WarningAppend($"[CodeWalker] Skipping texture resize for ({texture.Value.Name}) - Invalid or corrupted texture data: {ddsException.Message}");
+																Dicts.Add(texture.Key, texture.Value);
+																continue;
+															}
 
                                                             try
                                                             {
